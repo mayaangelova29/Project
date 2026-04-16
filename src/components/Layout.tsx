@@ -7,7 +7,8 @@ export const Layout: React.FC = () => {
     <div className="app-container layout-wrapper">
       <nav className="main-nav">
         <NavLink 
-          to="/" 
+          to="/app" 
+          end
           className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
           style={{ textDecoration: 'none' }}
         >
@@ -16,7 +17,7 @@ export const Layout: React.FC = () => {
         </NavLink>
         
         <NavLink 
-          to="/leaderboard" 
+          to="/app/leaderboard" 
           className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
           style={{ textDecoration: 'none' }}
         >
@@ -24,10 +25,14 @@ export const Layout: React.FC = () => {
           <span>Leaderboard</span>
         </NavLink>
         
-        <div className="nav-item opacity-50 cursor-not-allowed">
+        <NavLink 
+          to="/app/profile" 
+          className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+          style={{ textDecoration: 'none' }}
+        >
           <User size={24} />
           <span>Profile</span>
-        </div>
+        </NavLink>
       </nav>
 
       <div className="main-content">

@@ -40,7 +40,7 @@ export const VenueDetail: React.FC = () => {
       {/* Hero Image */}
       <div style={{ position: 'relative', height: '280px', borderRadius: 'var(--radius-lg)', overflow: 'hidden', marginBottom: '24px' }}>
         <button 
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/app')}
           style={{ 
             position: 'absolute', top: '16px', left: '16px', zIndex: 10,
             background: 'rgba(15,23,42,0.6)', border: 'none', color: '#fff',

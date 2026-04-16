@@ -19,7 +19,7 @@ export const VenueCard: React.FC<Props> = ({ venue }) => {
     <div 
       className="card mb-4" 
       style={{ padding: '0', overflow: 'hidden', cursor: 'pointer' }}
-      onClick={() => navigate(`/venue/${venue.id}`)}
+      onClick={() => navigate(`/app/venue/${venue.id}`)}
     >
       <div style={{ position: 'relative', height: '140px' }}>
         <img 

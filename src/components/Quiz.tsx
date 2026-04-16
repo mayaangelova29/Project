@@ -104,7 +104,7 @@ export const Quiz: React.FC = () => {
       const coords = await getCurrentLocation();
       setUserCoords(coords);
       setOnboarded(true);
-      navigate('/');
+      navigate('/app');
     } catch (e) {
       console.error(e);
       setGpsError("We need your location to find nearby venues.");
@@ -112,7 +112,7 @@ export const Quiz: React.FC = () => {
       const fallBackCoords = { lat: 42.6977, lng: 23.3219 }; 
       setUserCoords(fallBackCoords);
       setOnboarded(true);
-      setTimeout(() => navigate('/'), 2000);
+      setTimeout(() => navigate('/app'), 2000);
     } finally {
       setLoading(false);
     }
@@ -138,10 +138,11 @@ export const Quiz: React.FC = () => {
 
   return (
     <div className="app-container" style={{ padding: '24px' }}>
-      <div className="flex justify-between items-center mb-8 mt-4">
-        <div className="badge">Question {currentQuestion + 1} of {QUIZ_QUESTIONS.length}</div>
-        <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Vibe Profile</div>
-      </div>
+      <div style={{ maxWidth: '600px', margin: '0 auto', width: '100%', paddingTop: '5vh' }}>
+        <div className="flex justify-between items-center mb-8 mt-4">
+          <div className="badge">Question {currentQuestion + 1} of {QUIZ_QUESTIONS.length}</div>
+          <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Vibe Profile</div>
+        </div>
       
       {/* Progress bar */}
       <div style={{ width: '100%', height: '4px', background: 'var(--surface-color)', borderRadius: '2px', marginBottom: '32px' }}>
@@ -174,12 +175,13 @@ export const Quiz: React.FC = () => {
           </button>
         ))}
       </div>
-      
-      {currentQuestion === QUIZ_QUESTIONS.length - 1 && (
-        <p className="text-center text-muted mt-8 text-sm flex justify-center items-center gap-2">
-          <MapPin size={14} /> We will request location access next
-        </p>
-      )}
+        
+        {currentQuestion === QUIZ_QUESTIONS.length - 1 && (
+          <p className="text-center text-muted mt-8 text-sm flex justify-center items-center gap-2">
+            <MapPin size={14} /> We will request location access next
+          </p>
+        )}
+      </div>
     </div>
   );
 };
