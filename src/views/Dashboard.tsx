@@ -18,7 +18,7 @@ export const Dashboard: React.FC = () => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl" style={{ margin: 0 }}>
-            <span className="text-gradient">VibeFit</span> Matches
+            <span className="text-gradient">Hello, {state.userName || 'Athlete'}</span>
           </h1>
           <p className="text-sm text-muted flex items-center gap-1 mt-1">
             <MapPin size={12} /> Sofia, Bulgaria (10km radius)
@@ -46,13 +46,13 @@ export const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="grid-cards">
         {rankedVenues.length > 0 ? (
           rankedVenues.map((venue) => (
             <VenueCard key={venue.id} venue={venue} />
           ))
         ) : (
-          <div className="card text-center p-8 mt-4">
+          <div className="card text-center p-8 mt-4" style={{ gridColumn: '1 / -1' }}>
             <h3 className="text-lg">No venues found nearby</h3>
             <p className="text-muted text-sm mt-2">Try expanding your search or retaking the vibe quiz.</p>
           </div>

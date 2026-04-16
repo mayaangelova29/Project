@@ -4,12 +4,8 @@ import { Compass, Trophy, User } from 'lucide-react';
 
 export const Layout: React.FC = () => {
   return (
-    <div className="app-container">
-      <div className="main-content">
-        <Outlet />
-      </div>
-      
-      <nav className="bottom-nav">
+    <div className="app-container layout-wrapper">
+      <nav className="main-nav">
         <NavLink 
           to="/" 
           className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
@@ -33,6 +29,10 @@ export const Layout: React.FC = () => {
           <span>Profile</span>
         </div>
       </nav>
+
+      <div className="main-content">
+        <Outlet />
+      </div>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Coordinates } from '../utils/geolocation';
+import type { Coordinates } from '../utils/geolocation';
 
 interface CheckIn {
   venueId: string;
@@ -7,6 +7,8 @@ interface CheckIn {
 }
 
 interface AppState {
+  isAuthenticated: boolean;
+  userName: string | null;
   hasOnboarded: boolean;
   userCoords: Coordinates | null;
   userKeywords: string[];
@@ -16,6 +18,7 @@ interface AppState {
 
 interface AppContextProps {
   state: AppState;
+  setAuthenticated: (status: boolean, name?: string) => void;
   setOnboarded: (status: boolean) => void;
   setUserCoords: (coords: Coordinates) => void;
   setUserKeywords: (keywords: string[]) => void;
@@ -24,6 +27,8 @@ interface AppContextProps {
 }
 
 const defaultState: AppState = {
+  isAuthenticated: false,
+  userName: null,
   hasOnboarded: false,
   userCoords: null,
   userKeywords: [],
@@ -50,6 +55,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.setItem('vibefit_state', JSON.stringify(state));
   }, [state]);
 
+  const setAuthenticated = (isAuthenticated: boolean, userName?: string) => {
+    setState((s) => ({ ...s, isAuthenticated, userName: userName || s.userName }));
+  };
   const setOnboarded = (hasOnboarded: boolean) => setState((s) => ({ ...s, hasOnboarded }));
   const setUserCoords = (userCoords: Coordinates) => setState((s) => ({ ...s, userCoords }));
   const setUserKeywords = (userKeywords: string[]) => setState((s) => ({ ...s, userKeywords }));
@@ -70,7 +78,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   return (
-    <AppContext.Provider value={{ state, setOnboarded, setUserCoords, setUserKeywords, addCheckIn, resetState }}>
+    <AppContext.Provider value={{ state, setAuthenticated, setOnboarded, setUserCoords, setUserKeywords, addCheckIn, resetState }}>
       {children}
     </AppContext.Provider>
   );

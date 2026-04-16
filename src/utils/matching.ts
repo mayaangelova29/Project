@@ -1,5 +1,6 @@
-import { Venue } from '../data/venues';
-import { Coordinates, calculateDistance } from './geolocation';
+import type { Venue } from '../data/venues';
+import { calculateDistance } from './geolocation';
+import type { Coordinates } from './geolocation';
 
 export interface MatchedVenue extends Venue {
   distance: number; // in km

@@ -23,7 +23,7 @@ export const Leaderboard: React.FC = () => {
   const currentUserRank = combinedLeaderboard.findIndex(u => u.id === 'me') + 1;
 
   return (
-    <>
+    <div style={{ maxWidth: '600px', margin: '0 auto' }}>
       <div className="text-center mb-8">
         <Trophy size={48} color="#f59e0b" className="mx-auto mb-4" />
         <h1 className="text-2xl mb-1">Top Athletes</h1>
@@ -83,6 +83,6 @@ export const Leaderboard: React.FC = () => {
           )
         })}
       </div>
-    </>
+    </div>
   );
 };

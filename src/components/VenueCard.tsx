@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MatchedVenue } from '../utils/matching';
+import type { MatchedVenue } from '../utils/matching';
 import { MapPin, Star, CheckCircle } from 'lucide-react';
 
 interface Props {

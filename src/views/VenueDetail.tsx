@@ -36,9 +36,9 @@ export const VenueDetail: React.FC = () => {
   };
 
   return (
-    <div className="absolute inset-0 bg-slate-900 z-50 overflow-y-auto" style={{ background: 'var(--bg-color)', minHeight: '100vh' }}>
+    <div style={{ maxWidth: '800px', margin: '0 auto' }}>
       {/* Hero Image */}
-      <div style={{ position: 'relative', height: '280px' }}>
+      <div style={{ position: 'relative', height: '280px', borderRadius: 'var(--radius-lg)', overflow: 'hidden', marginBottom: '24px' }}>
         <button 
           onClick={() => navigate('/')}
           style={{ 
@@ -62,7 +62,7 @@ export const VenueDetail: React.FC = () => {
         }}></div>
       </div>
 
-      <div style={{ padding: '0 24px 100px 24px', marginTop: '-40px', position: 'relative', zIndex: 5 }}>
+      <div style={{ padding: '0 8px', position: 'relative', zIndex: 5 }}>
         
         {/* Title & Score */}
         <div className="flex justify-between items-start mb-2">
