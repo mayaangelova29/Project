@@ -1,0 +1,61 @@
+import { Venue } from '../data/venues';
+import { Coordinates, calculateDistance } from './geolocation';
+
+export interface MatchedVenue extends Venue {
+  distance: number; // in km
+  matchPercentage: number; // 0-100
+  hybridScore: number; // 0-100
+}
+
+const MAX_RADIUS_KM = 10;
+
+/**
+ * Calculates how well a venue matches the user's preferred keywords.
+ */
+export function calculateVibeMatch(userKeywords: string[], venueKeywords: string[]): number {
+  if (userKeywords.length === 0) return 50; // baseline if no traits
+
+  const intersection = userKeywords.filter((kw) => venueKeywords.includes(kw));
+  // Exact match ratio: how many of the user's preferred keywords are in the venue?
+  // Let's make it more forgiving. If they match 3 traits, it's 100%. 2 is 66%, etc.
+  const score = (intersection.length / Math.max(1, userKeywords.length)) * 100;
+  
+  // We can add a small baseline so it never says 0%
+  return Math.min(100, Math.max(10, score));
+}
+
+/**
+ * Ranks venues for a specific user profile and location
+ */
+export function rankVenues(
+  venues: Venue[],
+  userLocation: Coordinates,
+  userKeywords: string[]
+): MatchedVenue[] {
+  const result: MatchedVenue[] = [];
+
+  for (const venue of venues) {
+    const distance = calculateDistance(userLocation, { lat: venue.lat, lng: venue.lng });
+    
+    // Only include venues within our 10km radius
+    if (distance <= MAX_RADIUS_KM) {
+      const matchPercentage = calculateVibeMatch(userKeywords, venue.keywords);
+      
+      // Distance score: 0km = 100%, 10km = 0%
+      const distanceScore = Math.max(0, 100 - (distance / MAX_RADIUS_KM) * 100);
+
+      // Hybrid calculation: 60% vibe, 40% distance
+      const hybridScore = (0.6 * matchPercentage) + (0.4 * distanceScore);
+
+      result.push({
+        ...venue,
+        distance,
+        matchPercentage,
+        hybridScore
+      });
+    }
+  }
+
+  // Sort descending by hybrid score
+  return result.sort((a, b) => b.hybridScore - a.hybridScore);
+}
