@@ -87,7 +87,7 @@ export const Landing: React.FC = () => {
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', padding: '24px' }}>
         <h1 className="text-gradient" style={{ fontSize: '3.5rem', lineHeight: '1.1', marginBottom: '48px', textAlign: 'center' }}>VibeFit</h1>
         
-        <div key={introStep} className="card animate-intro" style={{ maxWidth: '600px', width: '100%', padding: '48px 32px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '400px', justifyContent: 'center' }}>
+        <div key={introStep} className="card animate-intro" style={{ maxWidth: '600px', width: '100%', padding: '48px 32px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '400px', justifyContent: 'center', background: 'rgba(56, 189, 248, 0.25)', border: '1px solid rgba(56, 189, 248, 0.4)', boxShadow: '0 8px 32px rgba(56, 189, 248, 0.25)', backdropFilter: 'blur(20px)' }}>
           
           <div style={{ marginBottom: '32px', height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {slide.icon ? (
@@ -103,16 +103,25 @@ export const Landing: React.FC = () => {
           <p className="text-muted" style={{ fontSize: '1.1rem', marginBottom: '48px', lineHeight: '1.6' }}>{slide.desc}</p>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginTop: 'auto' }}>
-            {/* Dots */}
-            <div style={{ display: 'flex', gap: '8px' }}>
-              {[0,1,2,3].map(st => (
-                <div key={st} style={{ width: '10px', height: '10px', borderRadius: '50%', background: st === introStep ? 'var(--primary-color)' : 'rgba(255,255,255,0.2)', transition: 'background 0.3s' }} />
+            <div style={{ flex: 1, textAlign: 'left' }}>
+              {introStep > 0 && (
+                <button onClick={() => setIntroStep(introStep - 1)} className="btn-secondary" style={{ padding: '8px 16px', borderRadius: 'var(--radius-full)', fontSize: '0.9rem' }}>
+                  Back
+                </button>
+              )}
+            </div>
+
+            <div style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '8px' }}>
+              {[0, 1, 2, 3].map(st => (
+                <div key={st} style={{ width: '8px', height: '8px', borderRadius: '50%', background: st === introStep ? 'var(--primary-color)' : 'rgba(255,255,255,0.2)', transition: 'background 0.3s' }} />
               ))}
             </div>
 
-            <button onClick={handleNextIntroStep} className="btn">
-              {introStep === 3 ? 'Get Started' : 'Next'} {introStep === 3 ? <CheckCircle2 size={18} /> : <ArrowRight size={18} />}
-            </button>
+            <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={handleNextIntroStep} className="btn" style={{ padding: '8px 20px', fontSize: '0.9rem' }}>
+                {introStep === 3 ? 'Get Started' : 'Next'} {introStep === 3 ? <CheckCircle2 size={16} /> : <ArrowRight size={16} />}
+              </button>
+            </div>
           </div>
         </div>
       </div>
