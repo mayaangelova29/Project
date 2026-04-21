@@ -82,12 +82,22 @@ export const VenueDetail: React.FC = () => {
 
         {/* Actions Row */}
         <div className="flex gap-4 mb-8">
-          <button className="flex-1 btn btn-secondary" style={{ padding: '10px' }}>
+          <a 
+            href={`https://www.google.com/maps/dir/?api=1&destination=${venue.lat},${venue.lng}`} 
+            target="_blank" 
+            rel="noreferrer"
+            className="flex-1 btn btn-secondary" 
+            style={{ padding: '10px', textDecoration: 'none' }}
+          >
             <Navigation size={18} /> Directions
-          </button>
-          <button className="flex-1 btn btn-secondary" style={{ padding: '10px' }}>
+          </a>
+          <a 
+            href="tel:+359888123456"
+            className="flex-1 btn btn-secondary" 
+            style={{ padding: '10px', textDecoration: 'none' }}
+          >
             <Phone size={18} /> Call
-          </button>
+          </a>
         </div>
 
         {/* Why it matches */}
@@ -145,8 +155,14 @@ export const VenueDetail: React.FC = () => {
           <p className="text-sm text-muted italic">
             "Vibe extraction: Users frequently mention words like <strong>{venue.keywords.slice(0,2).join(' and ')}</strong> here."
           </p>
-          <a href="#" className="flex items-center gap-1 text-sm mt-3" style={{ color: 'var(--accent-color)' }}>
-            Read all reviews <ExternalLink size={14} />
+          <a 
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue.name + ' ' + venue.address)}`} 
+            target="_blank" 
+            rel="noreferrer" 
+            className="flex items-center gap-1 text-sm mt-3" 
+            style={{ color: 'var(--accent-color)', textDecoration: 'none' }}
+          >
+            Read all reviews on Google <ExternalLink size={14} />
           </a>
         </section>
 
@@ -170,6 +186,8 @@ export const VenueDetail: React.FC = () => {
           </div>
         )}
       </div>
+
+
     </div>
   );
 };

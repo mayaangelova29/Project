@@ -102,7 +102,7 @@ export const venues: Venue[] = [
     rating: 5.0, reviewCount: 88,
     acceptsMultisport: true, freeSession: true,
     imageUrl: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=500&q=80",
-    description: "High-energy, fun zumba dance classes for everyone."
+    description: "High-energy, fun zumba dance classes designed for everyone. From absolute beginners to seasoned dancers, our certified instructors ensure you sweat while smiling. Expect an immersive atmosphere with upbeat Latin music, vibrant lighting, and a heavily community-driven vibe. Locker rooms and showers are fully equipped."
   },
   {
     id: "v9",

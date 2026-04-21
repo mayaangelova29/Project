@@ -41,16 +41,9 @@ export const Landing: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isLogin) {
-      if (email && password) {
-        setAuthenticated(true, email.split('@')[0]);
-        navigate('/onboarding');
-      }
-    } else {
-      if (name && email && password) {
-        setAuthenticated(true, name);
-        navigate('/onboarding');
-      }
+    if (name && email && password) {
+      setAuthenticated(true, name);
+      navigate('/onboarding');
     }
   };
 
@@ -252,22 +245,20 @@ export const Landing: React.FC = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                  {!isLogin && (
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs text-muted uppercase font-bold tracking-wider">Name</label>
-                      <div className="flex items-center gap-2" style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-md)', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                        <User size={20} className="text-muted" />
-                        <input
-                          type="text"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="John Doe"
-                          required
-                          style={{ background: 'transparent', border: 'none', outline: 'none', color: 'var(--text-main)', width: '100%', fontSize: '1rem' }}
-                        />
-                      </div>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs text-muted uppercase font-bold tracking-wider">Name</label>
+                    <div className="flex items-center gap-2" style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-md)', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                      <User size={20} className="text-muted" />
+                      <input
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="John Doe"
+                        required
+                        style={{ background: 'transparent', border: 'none', outline: 'none', color: 'var(--text-main)', width: '100%', fontSize: '1rem' }}
+                      />
                     </div>
-                  )}
+                  </div>
 
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs text-muted uppercase font-bold tracking-wider">Email</label>
