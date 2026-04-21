@@ -47,11 +47,11 @@ export const Profile: React.FC = () => {
         <h3 className="text-lg mb-3 flex items-center gap-2">
           <Star size={18} color="var(--accent-color)" /> Your Vibe Profile
         </h3>
-        <p className="text-sm text-muted mb-4">
+        <p className="text-sm text-muted mb-8">
           These are the traits we extracted from your onboarding responses. We use these to find your perfect environments.
         </p>
         
-        <div className="flex gap-2 flex-wrap mb-6">
+        <div className="flex gap-2 flex-wrap mb-8">
           {state.userKeywords.length > 0 ? state.userKeywords.map((kw) => (
             <span key={kw} className="badge" style={{ background: 'var(--primary-color)', color: '#fff', borderColor: 'transparent', padding: '6px 12px' }}>
               {kw}
