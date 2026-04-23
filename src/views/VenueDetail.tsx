@@ -4,6 +4,7 @@ import { ChevronLeft, MapPin, Star, Navigation, Phone, CheckCircle, ExternalLink
 import { useAppContext } from '../context/AppContext';
 import { venues } from '../data/venues';
 import { calculateVibeMatch } from '../utils/matching';
+import { fetchGooglePlacePhoto } from '../utils/googlePlaces';
 
 export const VenueDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +14,23 @@ export const VenueDetail: React.FC = () => {
   const [checkedInMessage, setCheckedInMessage] = useState<string | null>(null);
 
   const venue = useMemo(() => venues.find((v) => v.id === id), [id]);
+  const [photoUrl, setPhotoUrl] = useState<string>('');
+
+  // Setup initial photo url
+  useEffect(() => {
+    if (venue) setPhotoUrl(venue.imageUrl);
+  }, [venue]);
+
+  // Try fetching API photo
+  useEffect(() => {
+    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    if (apiKey && venue) {
+      fetchGooglePlacePhoto(venue.name, venue.address, apiKey).then(url => {
+        if (url) setPhotoUrl(url);
+      });
+    }
+  }, [venue]);
+
   const hasCheckedInToday = useMemo(() => {
     if (!venue) return false;
     const today = new Date().toDateString();
@@ -52,7 +70,7 @@ export const VenueDetail: React.FC = () => {
           <ChevronLeft size={24} />
         </button>
         <img 
-          src={venue.imageUrl} 
+          src={photoUrl || venue.imageUrl} 
           alt={venue.name} 
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
@@ -83,13 +101,13 @@ export const VenueDetail: React.FC = () => {
         {/* Actions Row */}
         <div className="flex gap-4 mb-8">
           <a 
-            href={`https://www.google.com/maps/dir/?api=1&destination=${venue.lat},${venue.lng}`} 
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue.name + ', ' + venue.address)}`} 
             target="_blank" 
             rel="noreferrer"
             className="flex-1 btn btn-secondary" 
             style={{ padding: '10px', textDecoration: 'none' }}
           >
-            <Navigation size={18} /> Directions
+            <Navigation size={18} /> Open in Maps
           </a>
           <a 
             href="tel:+359888123456"
@@ -98,6 +116,19 @@ export const VenueDetail: React.FC = () => {
           >
             <Phone size={18} /> Call
           </a>
+        </div>
+
+        {/* Map Widget */}
+        <div style={{ width: '100%', height: '300px', borderRadius: 'var(--radius-lg)', overflow: 'hidden', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <iframe 
+            width="100%" 
+            height="100%" 
+            frameBorder="0" 
+            style={{ border: 0 }} 
+            src={`https://maps.google.com/maps?q=${encodeURIComponent(venue.name + ', ' + venue.address)}&t=m&z=15&output=embed&iwloc=near`} 
+            allowFullScreen 
+            title={`Map for ${venue.name}`}
+          ></iframe>
         </div>
 
         {/* Why it matches */}
