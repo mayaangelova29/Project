@@ -48,12 +48,14 @@ export function rankVenues(
       // Hybrid calculation: 60% vibe, 40% distance
       const hybridScore = (0.6 * matchPercentage) + (0.4 * distanceScore);
 
-      result.push({
-        ...venue,
-        distance,
-        matchPercentage,
-        hybridScore
-      });
+      if (matchPercentage >= 45) {
+        result.push({
+          ...venue,
+          distance,
+          matchPercentage,
+          hybridScore
+        });
+      }
     }
   }
 
