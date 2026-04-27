@@ -11,6 +11,7 @@ export interface Venue {
   freeSession: boolean;
   imageUrl: string;
   description: string;
+  mapQuery?: string;
 }
 
 // Sofia center approx: 42.6977° N, 23.3219° E
@@ -103,7 +104,8 @@ export const venues: Venue[] = [
     rating: 4.7, reviewCount: 215,
     acceptsMultisport: true, freeSession: false,
     imageUrl: "https://alchetron.com/cdn/levski-sofia-sports-club-3542dd38-0874-43c9-b80c-22903923550-resize-750.jpg",
-    description: "Iconic fight club catering to Brazilian Jiu-Jitsu, Muay Thai, and Boxing. High intensity environment with highly experienced coaches."
+    description: "Iconic fight club catering to Brazilian Jiu-Jitsu, Muay Thai, and Boxing. High intensity environment with highly experienced coaches.",
+    mapQuery: "Боен Клуб Левски София, Sofia"
   },
   {
     id: "v10",
@@ -114,7 +116,8 @@ export const venues: Venue[] = [
     rating: 4.8, reviewCount: 312,
     acceptsMultisport: false, freeSession: true,
     imageUrl: "https://images.unsplash.com/photo-1555597673-b21d5c935865?auto=format&fit=crop&w=800&q=80",
-    description: "Massive facility focusing on MMA, Combat Sambo, Boxing, and Grappling. Great for serious competitors and aspiring fighters."
+    description: "Massive facility focusing on MMA, Combat Sambo, Boxing, and Grappling. Great for serious competitors and aspiring fighters.",
+    mapQuery: "Боен клуб България, Sofia"
   },
   {
     id: "v11",
@@ -136,7 +139,8 @@ export const venues: Venue[] = [
     rating: 4.6, reviewCount: 198,
     acceptsMultisport: true, freeSession: false,
     imageUrl: "https://images.unsplash.com/photo-1517438476312-10d79c077509?auto=format&fit=crop&w=800&q=80",
-    description: "Old-school style boxing gym focusing heavily on strict technique, stamina, and hardcore boxing foundations."
+    description: "Old-school style boxing gym focusing heavily on strict technique, stamina, and hardcore boxing foundations.",
+    mapQuery: "Боксова зала Стил, Sofia"
   },
   {
     id: "v13",
@@ -147,7 +151,8 @@ export const venues: Venue[] = [
     rating: 4.9, reviewCount: 680,
     acceptsMultisport: true, freeSession: true,
     imageUrl: "https://time4.dance/ads/FB-post-image-narodni-tanci.jpg?ver=1",
-    description: "Immerse yourself in Bulgarian culture with traditional circular folklore dancing. Very friendly, community-driven, and open to complete beginners."
+    description: "Immerse yourself in Bulgarian culture with traditional circular folklore dancing. Very friendly, community-driven, and open to complete beginners.",
+    mapQuery: "Клуб за народни танци Витоша, Sofia"
   },
   {
     id: "v14",
@@ -191,7 +196,8 @@ export const venues: Venue[] = [
     rating: 4.5, reviewCount: 1650,
     acceptsMultisport: true, freeSession: false,
     imageUrl: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=800&q=80",
-    description: "Sofia's most iconic olympic-sized swimming compound. Crystal blue water, huge indoor pools, excellent for serious cardio sessions."
+    description: "Sofia's most iconic olympic-sized swimming compound. Crystal blue water, huge indoor pools, excellent for serious cardio sessions.",
+    mapQuery: "Плувен комплекс Спартак, Sofia"
   },
   {
     id: "v18", name: "Ritmo Dance Studio", lat: 42.6450, lng: 23.3440, address: "Studentski Grad, Sofia",
@@ -222,14 +228,16 @@ export const venues: Venue[] = [
     id: "v23", name: "Ludo Mlado Folklore Club", lat: 42.7000, lng: 23.3300, address: "Zaimov Park area, Sofia",
     keywords: ["fast-paced", "intense", "community-focused"], rating: 4.9, reviewCount: 888,
     acceptsMultisport: false, freeSession: false, imageUrl: "https://i1.sndcdn.com/artworks-000193354331-1wt7nj-t500x500.jpg",
-    description: "High-energy folklore ensemble. They teach complex steps to energetic traditional music."
+    description: "High-energy folklore ensemble. They teach complex steps to energetic traditional music.",
+    mapQuery: "Клуб за народни танци Лудо Младо, Sofia"
   },
 
   {
     id: "v25", name: "National Tennis Center", lat: 42.6800, lng: 23.3350, address: "Borisova Gradina, Sofia",
     keywords: ["pro-level", "technique-focused", "cardio", "strict"], rating: 4.5, reviewCount: 955,
     acceptsMultisport: false, freeSession: false, imageUrl: "https://bblbg.com/wp-content/uploads/2021/11/tennis-tournament-2021-46.jpg",
-    description: "12 clay courts embedded beautifully inside Borisova Garden. The historical home of Bulgarian tennis."
+    description: "12 clay courts embedded beautifully inside Borisova Garden. The historical home of Bulgarian tennis.",
+    mapQuery: "Български Национален Тенис Център, Sofia"
   },
   {
     id: "v26", name: "MG Tennis Club", lat: 42.6985, lng: 23.3385, address: "30 Yanko Sakuzov Blvd., Sofia",
@@ -241,7 +249,8 @@ export const venues: Venue[] = [
     id: "v27", name: "Maleeva Tennis Club", lat: 42.6610, lng: 23.3150, address: "57 Nicola Vaptsarov Blvd., Sofia",
     keywords: ["pro-level", "luxury", "clean", "strict"], rating: 4.8, reviewCount: 1540,
     acceptsMultisport: false, freeSession: false, imageUrl: "https://sofiaestates.com/wp-content/uploads/2015/06/pic-123.jpg",
-    description: "Owned by the famous Maleeva sisters. Exceptional indoor clay courts and an elite country-club atmosphere."
+    description: "Owned by the famous Maleeva sisters. Exceptional indoor clay courts and an elite country-club atmosphere.",
+    mapQuery: "Тенис клуб Малееви, Sofia"
   },
   {
     id: "v28", name: "AYA Padel Club", lat: 42.6500, lng: 23.3500, address: "Studentski Grad, Sofia",
@@ -271,7 +280,8 @@ export const venues: Venue[] = [
     id: "v32", name: "Dianabad Swimming Pool", lat: 42.6650, lng: 23.3450, address: "Nikola Gabrovski Blvd., Sofia",
     keywords: ["cardio", "pro-level", "intense"], rating: 4.4, reviewCount: 1100,
     acceptsMultisport: true, freeSession: false, imageUrl: "https://images.unsplash.com/photo-1600965962361-9035dbfd1c50?auto=format&fit=crop&w=800&q=80",
-    description: "A historic swimming facility known for its rigorous swim lanes and no-nonsense sports vibe."
+    description: "A historic swimming facility known for its rigorous swim lanes and no-nonsense sports vibe.",
+    mapQuery: "Плувен комплекс Дианабад, Sofia"
   },
 
   {
@@ -284,7 +294,8 @@ export const venues: Venue[] = [
     id: "v35", name: "Martial Arts Club Armeec", lat: 42.6950, lng: 23.3500, address: "Arena Armeec Complex, Sofia",
     keywords: ["strict", "pro-level", "intense", "sparring"], rating: 4.9, reviewCount: 1200,
     acceptsMultisport: false, freeSession: false, imageUrl: "https://mktickets.mk/wp-content/uploads/2019/01/Arena-Armeec-JESC-2.jpg",
-    description: "A hardcore Kickboxing and Muay Thai gym that breeds champions. Very intense training sessions."
+    description: "A hardcore Kickboxing and Muay Thai gym that breeds champions. Very intense training sessions.",
+    mapQuery: "Спортен клуб Армеец, Sofia"
   },
   {
     id: "v36", name: "ABC Fight Club", lat: 42.6880, lng: 23.3320, address: "Vasil Levski Stadium, Sofia",
