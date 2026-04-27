@@ -4,8 +4,19 @@ import { useAppContext } from '../context/AppContext';
 import { LogOut, User as UserIcon, Star, CheckCircle, RefreshCw } from 'lucide-react';
 
 export const Profile: React.FC = () => {
-  const { state, resetState } = useAppContext();
+  const { state, setProfilePhoto, resetState } = useAppContext();
   const navigate = useNavigate();
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePhoto(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleLogout = () => {
     resetState();
@@ -19,13 +30,24 @@ export const Profile: React.FC = () => {
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto' }}>
       <div className="text-center mb-8">
-        <div 
+        <label 
           style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--surface-color)', 
           margin: '0 auto 16px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 0 20px rgba(99, 102, 241, 0.4)', border: '2px solid var(--primary-color)' }}
+          boxShadow: '0 0 20px rgba(99, 102, 241, 0.4)', border: '2px solid var(--primary-color)',
+          cursor: 'pointer', overflow: 'hidden', position: 'relative' }}
         >
-          <UserIcon size={40} color="var(--primary-color)" />
-        </div>
+          <input 
+            type="file" 
+            accept="image/*" 
+            style={{ display: 'none' }} 
+            onChange={handlePhotoUpload} 
+          />
+          {state.profilePhoto ? (
+            <img src={state.profilePhoto} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+            <UserIcon size={40} color="var(--primary-color)" />
+          )}
+        </label>
         <h1 className="text-2xl mb-1">{state.userName || 'Athlete'}</h1>
         <p className="text-muted text-sm">VibeFit Member</p>
       </div>

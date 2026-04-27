@@ -3,7 +3,7 @@ import { useAppContext } from '../context/AppContext';
 import { venues } from '../data/venues';
 import { rankVenues } from '../utils/matching';
 import { VenueCard } from '../components/VenueCard';
-import { MapPin, Search } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
   const { state } = useAppContext();
@@ -23,13 +23,6 @@ export const Dashboard: React.FC = () => {
           <p className="text-sm text-muted flex items-center gap-1 mt-1">
             <MapPin size={12} /> Sofia, Bulgaria (10km radius)
           </p>
-        </div>
-        <div style={{
-          width: '40px', height: '40px', borderRadius: '50%', 
-          background: 'var(--surface-color)', display: 'flex', 
-          justifyContent: 'center', alignItems: 'center'
-        }}>
-          <Search size={18} color="var(--text-main)" />
         </div>
       </div>
 
