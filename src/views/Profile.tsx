@@ -11,8 +11,25 @@ export const Profile: React.FC = () => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfilePhoto(reader.result as string);
+      reader.onloadend = async () => {
+        const photoData = reader.result as string;
+        setProfilePhoto(photoData);
+
+        if (state.email) {
+          try {
+            const res = await fetch(`http://localhost:3001/users?email=${state.email}`);
+            const users = await res.json();
+            if (users.length > 0) {
+              await fetch(`http://localhost:3001/users/${users[0].id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ profilePhoto: photoData })
+              });
+            }
+          } catch (error) {
+            console.error("Failed to save photo to DB", error);
+          }
+        }
       };
       reader.readAsDataURL(file);
     }

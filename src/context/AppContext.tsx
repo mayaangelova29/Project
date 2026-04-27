@@ -9,6 +9,7 @@ interface CheckIn {
 interface AppState {
   isAuthenticated: boolean;
   userName: string | null;
+  email: string | null;
   profilePhoto: string | null;
   hasOnboarded: boolean;
   userCoords: Coordinates | null;
@@ -19,7 +20,7 @@ interface AppState {
 
 interface AppContextProps {
   state: AppState;
-  setAuthenticated: (status: boolean, name?: string) => void;
+  setAuthenticated: (status: boolean, name?: string, email?: string) => void;
   setProfilePhoto: (photo: string) => void;
   setOnboarded: (status: boolean) => void;
   setUserCoords: (coords: Coordinates) => void;
@@ -31,6 +32,7 @@ interface AppContextProps {
 const defaultState: AppState = {
   isAuthenticated: false,
   userName: null,
+  email: null,
   profilePhoto: null,
   hasOnboarded: false,
   userCoords: null,
@@ -58,8 +60,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.setItem('vibefit_state', JSON.stringify(state));
   }, [state]);
 
-  const setAuthenticated = (isAuthenticated: boolean, userName?: string) => {
-    setState((s) => ({ ...s, isAuthenticated, userName: userName || s.userName }));
+  const setAuthenticated = (isAuthenticated: boolean, userName?: string, email?: string) => {
+    setState((s) => ({ ...s, isAuthenticated, userName: userName || s.userName, email: email || s.email }));
   };
   const setProfilePhoto = (profilePhoto: string) => setState((s) => ({ ...s, profilePhoto }));
   const setOnboarded = (hasOnboarded: boolean) => setState((s) => ({ ...s, hasOnboarded }));

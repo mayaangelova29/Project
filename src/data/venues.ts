@@ -82,17 +82,7 @@ export const venues: Venue[] = [
     imageUrl: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80",
     description: "The premier martial arts team in Bulgaria. Whether you're a beginner or Pro MMA fighter, the training here is authentic and demanding."
   },
-  {
-    id: "v7",
-    name: "Yoga Vibe South",
-    lat: 42.6680, lng: 23.3180,
-    address: "47 Cherni Vrah Blvd., Sofia",
-    keywords: ["relaxed", "friendly", "technique-focused", "clean"],
-    rating: 4.8, reviewCount: 550,
-    acceptsMultisport: true, freeSession: true,
-    imageUrl: "https://s.inyourpocket.com/gallery/sofia/2020/09/yoga vibe.jpg",
-    description: "A calming oasis focusing on mind-body realignment. Wide range of yoga styles offered by top certified instructors."
-  },
+
   {
     id: "v8",
     name: "CrossFit Vitosha",

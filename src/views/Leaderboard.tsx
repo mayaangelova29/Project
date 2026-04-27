@@ -1,24 +1,46 @@
-import React, { useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Trophy, Medal, Star } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 
-// Mock other users on the leaderboard for demonstration
-const mockUsers = [
-  { id: '1', name: 'Alex K.', points: 15400, avatar: 'https://i.pravatar.cc/150?u=1' },
-  { id: '2', name: 'Maria S.', points: 12200, avatar: 'https://i.pravatar.cc/150?u=2' },
-  { id: '3', name: 'Ivan D.', points: 9800, avatar: 'https://i.pravatar.cc/150?u=3' },
-  { id: '4', name: 'Georgi T.', points: 8500, avatar: 'https://i.pravatar.cc/150?u=4' },
-  { id: '5', name: 'Elena V.', points: 7100, avatar: 'https://i.pravatar.cc/150?u=5' },
-];
-
 export const Leaderboard: React.FC = () => {
   const { state } = useAppContext();
+  const [dbUsers, setDbUsers] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/users');
+        const users = await response.json();
+        setDbUsers(users);
+      } catch (error) {
+        console.error("Failed to fetch users", error);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   // Insert the current user into the global leaderboard
   const combinedLeaderboard = useMemo(() => {
-    const list = [...mockUsers, { id: 'me', name: 'You', points: state.points, avatar: 'https://i.pravatar.cc/150?u=me' }];
+    const otherUsers = dbUsers
+      .filter(u => u.email !== state.email)
+      .map(u => ({
+        id: u.id,
+        name: u.name,
+        points: u.points || 0,
+        avatar: u.profilePhoto || `https://i.pravatar.cc/150?u=${u.id}`
+      }));
+
+    const defaultMocks = [
+      { id: 'mock1', name: 'Alex K.', points: 15400, avatar: 'https://i.pravatar.cc/150?u=1' },
+      { id: 'mock2', name: 'Maria S.', points: 12200, avatar: 'https://i.pravatar.cc/150?u=2' },
+      { id: 'mock3', name: 'Ivan D.', points: 9800, avatar: 'https://i.pravatar.cc/150?u=3' },
+      { id: 'mock4', name: 'Georgi T.', points: 8500, avatar: 'https://i.pravatar.cc/150?u=4' },
+      { id: 'mock5', name: 'Elena V.', points: 7100, avatar: 'https://i.pravatar.cc/150?u=5' }
+    ];
+
+    const list = [...defaultMocks, ...otherUsers, { id: 'me', name: 'You', points: state.points, avatar: state.profilePhoto || 'https://i.pravatar.cc/150?u=me' }];
     return list.sort((a, b) => b.points - a.points);
-  }, [state.points]);
+  }, [dbUsers, state.points, state.profilePhoto, state.email]);
 
   const currentUserRank = combinedLeaderboard.findIndex(u => u.id === 'me') + 1;
 
@@ -34,8 +56,12 @@ export const Leaderboard: React.FC = () => {
       <div className="card mb-8" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(236,72,153,0.1))', borderColor: 'var(--primary-color)' }}>
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--surface-color)', overflow: 'hidden', border: '2px solid var(--primary-color)' }}>
-              <img src="https://i.pravatar.cc/150?u=me" alt="You" style={{ width: '100%' }} />
+            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--surface-color)', overflow: 'hidden', border: '2px solid var(--primary-color)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {state.profilePhoto ? (
+                <img src={state.profilePhoto} alt="You" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <img src="https://i.pravatar.cc/150?u=me" alt="You" style={{ width: '100%' }} />
+              )}
             </div>
             <div>
               <div className="font-bold">Your Rank: #{currentUserRank}</div>

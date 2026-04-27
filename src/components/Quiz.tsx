@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentLocation } from '../utils/geolocation';
 import { useAppContext } from '../context/AppContext';
-import { MapPin, ArrowRight, Loader } from 'lucide-react';
+import { MapPin, ArrowRight, ArrowLeft, Loader } from 'lucide-react';
 
 const QUIZ_QUESTIONS = [
   {
@@ -77,7 +77,7 @@ export const Quiz: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [gpsError, setGpsError] = useState<string | null>(null);
   
-  const { setUserKeywords, setUserCoords, setOnboarded } = useAppContext();
+  const { setUserKeywords, setUserCoords, setOnboarded, state } = useAppContext();
   const navigate = useNavigate();
 
   const handleOptionSelect = (traits: string[]) => {
@@ -95,6 +95,25 @@ export const Quiz: React.FC = () => {
 
   const finalizeOnboarding = async (traits: string[]) => {
     setLoading(true);
+
+    const markOnboardedInDb = async () => {
+      if (state.email) {
+        try {
+          const res = await fetch(`http://localhost:3001/users?email=${state.email}`);
+          const users = await res.json();
+          if (users.length > 0) {
+            await fetch(`http://localhost:3001/users/${users[0].id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ hasOnboarded: true })
+            });
+          }
+        } catch (error) {
+          console.error("Failed to update onboarding status", error);
+        }
+      }
+    };
+
     try {
       // We deduplicate traits
       const uniqueTraits = Array.from(new Set(traits));
@@ -103,6 +122,7 @@ export const Quiz: React.FC = () => {
       // Attempt to get GPS
       const coords = await getCurrentLocation();
       setUserCoords(coords);
+      await markOnboardedInDb();
       setOnboarded(true);
       navigate('/app');
     } catch (e) {
@@ -111,6 +131,7 @@ export const Quiz: React.FC = () => {
       // Fallback to absolute center of Sofia for demonstration if declined
       const fallBackCoords = { lat: 42.6977, lng: 23.3219 }; 
       setUserCoords(fallBackCoords);
+      await markOnboardedInDb();
       setOnboarded(true);
       setTimeout(() => navigate('/app'), 2000);
     } finally {
@@ -139,6 +160,12 @@ export const Quiz: React.FC = () => {
   return (
     <div className="app-container" style={{ padding: '24px' }}>
       <div style={{ maxWidth: '600px', margin: '0 auto', width: '100%', paddingTop: '5vh' }}>
+        <button 
+          onClick={() => navigate(-1)} 
+          style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', padding: 0 }}
+        >
+          <ArrowLeft size={18} /> Back
+        </button>
         <div className="flex justify-between items-center mb-8 mt-4">
           <div className="badge">Question {currentQuestion + 1} of {QUIZ_QUESTIONS.length}</div>
           <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>Vibe Profile</div>

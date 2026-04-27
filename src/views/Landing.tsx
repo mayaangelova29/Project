@@ -8,7 +8,7 @@ export const Landing: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { state, setAuthenticated, resetState } = useAppContext();
+  const { state, setAuthenticated, setOnboarded, resetState } = useAppContext();
   const navigate = useNavigate();
 
   // Intro Sequence State
@@ -39,11 +39,60 @@ export const Landing: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (name && email && password) {
-      setAuthenticated(true, name);
-      navigate('/onboarding');
+
+    if (isLogin) {
+      if (email && password) {
+        try {
+          const response = await fetch(`http://localhost:3001/users?email=${email}`);
+          const users = await response.json();
+          const user = users[0];
+
+          if (user) {
+            if (user.password === password) {
+              setAuthenticated(true, user.name, user.email);
+              if (user.hasOnboarded) {
+                setOnboarded(true);
+                navigate('/app');
+              } else {
+                navigate('/onboarding');
+              }
+            } else {
+              alert('Incorrect password');
+            }
+          } else {
+            alert('User not found. Please sign up.');
+          }
+        } catch (error) {
+          console.error("Login failed", error);
+          alert('Could not connect to database.');
+        }
+      }
+    } else {
+      if (name && email && password) {
+        try {
+          const checkRes = await fetch(`http://localhost:3001/users?email=${email}`);
+          const existingUsers = await checkRes.json();
+          if (existingUsers.length > 0) {
+            alert('User already exists with this email.');
+            return;
+          }
+
+          const newUser = { email, name, password, hasOnboarded: false, points: 0, checkIns: [] };
+          await fetch('http://localhost:3001/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newUser)
+          });
+
+          setAuthenticated(true, name, email);
+          navigate('/onboarding');
+        } catch (error) {
+          console.error("Sign up failed", error);
+          alert('Could not connect to database.');
+        }
+      }
     }
   };
 
@@ -245,20 +294,22 @@ export const Landing: React.FC = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-xs text-muted uppercase font-bold tracking-wider">Name</label>
-                    <div className="flex items-center gap-2" style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-md)', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                      <User size={20} className="text-muted" />
-                      <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="John Doe"
-                        required
-                        style={{ background: 'transparent', border: 'none', outline: 'none', color: 'var(--text-main)', width: '100%', fontSize: '1rem' }}
-                      />
+                  {!isLogin && (
+                    <div className="flex flex-col gap-1.5">
+                      <label className="text-xs text-muted uppercase font-bold tracking-wider">Name</label>
+                      <div className="flex items-center gap-2" style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-md)', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <User size={20} className="text-muted" />
+                        <input
+                          type="text"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="John Doe"
+                          required={!isLogin}
+                          style={{ background: 'transparent', border: 'none', outline: 'none', color: 'var(--text-main)', width: '100%', fontSize: '1rem' }}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   <div className="flex flex-col gap-1.5">
                     <label className="text-xs text-muted uppercase font-bold tracking-wider">Email</label>

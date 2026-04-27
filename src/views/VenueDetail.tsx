@@ -101,7 +101,7 @@ export const VenueDetail: React.FC = () => {
         {/* Actions Row */}
         <div className="flex gap-4 mb-8">
           <a 
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue.name + ', ' + venue.address)}`} 
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue.name + ', Sofia')}`} 
             target="_blank" 
             rel="noreferrer"
             className="flex-1 btn btn-secondary" 
@@ -125,7 +125,7 @@ export const VenueDetail: React.FC = () => {
             height="100%" 
             frameBorder="0" 
             style={{ border: 0 }} 
-            src={`https://maps.google.com/maps?q=${encodeURIComponent(venue.name + ', ' + venue.address)}&t=m&z=15&output=embed&iwloc=near`} 
+            src={`https://maps.google.com/maps?q=${encodeURIComponent(venue.name + ', Sofia')}&t=m&z=15&output=embed&iwloc=`} 
             allowFullScreen 
             title={`Map for ${venue.name}`}
           ></iframe>

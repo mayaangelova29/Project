@@ -1,0 +1,14 @@
+{
+  "users": [
+    {
+      "email": "maya.angelova07@gmail.com",
+      "name": "Maya Angelova",
+      "password": "1234567",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "id": "kPs3Bz29vTk"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
