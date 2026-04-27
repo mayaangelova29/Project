@@ -59,6 +59,6 @@ export function rankVenues(
     }
   }
 
-  // Sort descending by hybrid score
-  return result.sort((a, b) => b.hybridScore - a.hybridScore);
+  // Sort descending by match percentage
+  return result.sort((a, b) => b.matchPercentage - a.matchPercentage);
 }
