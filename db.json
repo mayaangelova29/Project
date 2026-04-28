@@ -7,7 +7,19 @@
       "hasOnboarded": true,
       "points": 0,
       "checkIns": [],
+      "role": "athlete",
       "id": "kPs3Bz29vTk"
+    },
+    {
+      "email": "neshrosi@gmail.com",
+      "name": "Open Mat BJJ",
+      "password": "12345",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "v1777355498488",
+      "id": "HdIIAlEGkLg"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

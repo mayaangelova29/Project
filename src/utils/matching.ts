@@ -8,7 +8,7 @@ export interface MatchedVenue extends Venue {
   hybridScore: number; // 0-100
 }
 
-const MAX_RADIUS_KM = 10;
+const DEFAULT_MAX_RADIUS_KM = 10;
 
 /**
  * Calculates how well a venue matches the user's preferred keywords.
@@ -31,19 +31,20 @@ export function calculateVibeMatch(userKeywords: string[], venueKeywords: string
 export function rankVenues(
   venues: Venue[],
   userLocation: Coordinates,
-  userKeywords: string[]
+  userKeywords: string[],
+  maxRadiusKm: number = DEFAULT_MAX_RADIUS_KM
 ): MatchedVenue[] {
   const result: MatchedVenue[] = [];
 
   for (const venue of venues) {
     const distance = calculateDistance(userLocation, { lat: venue.lat, lng: venue.lng });
     
-    // Only include venues within our 10km radius
-    if (distance <= MAX_RADIUS_KM) {
+    // Only include venues within the specified radius
+    if (distance <= maxRadiusKm) {
       const matchPercentage = calculateVibeMatch(userKeywords, venue.keywords);
       
-      // Distance score: 0km = 100%, 10km = 0%
-      const distanceScore = Math.max(0, 100 - (distance / MAX_RADIUS_KM) * 100);
+      // Distance score: 0km = 100%, maxRadius = 0%
+      const distanceScore = Math.max(0, 100 - (distance / maxRadiusKm) * 100);
 
       // Hybrid calculation: 60% vibe, 40% distance
       const hybridScore = (0.6 * matchPercentage) + (0.4 * distanceScore);

@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, MapPin, Star, Navigation, Phone, CheckCircle, ExternalLink } from 'lucide-react';
+import { ChevronLeft, MapPin, Star, Navigation, Phone, CheckCircle, ExternalLink, Users, Trophy } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { venues } from '../data/venues';
 import { calculateVibeMatch } from '../utils/matching';
@@ -9,7 +9,7 @@ import { fetchGooglePlacePhoto } from '../utils/googlePlaces';
 export const VenueDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { state, addCheckIn } = useAppContext();
+  const { state, addCheckIn, joinClub, leaveClub } = useAppContext();
   const [checkingIn, setCheckingIn] = useState(false);
   const [checkedInMessage, setCheckedInMessage] = useState<string | null>(null);
 
@@ -197,6 +197,60 @@ export const VenueDetail: React.FC = () => {
           </a>
         </section>
 
+        {/* Club Membership */}
+        {(() => {
+          const isMember = state.joinedClubs.includes(venue.id);
+          return (
+            <section className="mb-6">
+              {isMember ? (
+                <div className="card" style={{ background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '20px' }}>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-3">
+                      <div style={{ background: 'rgba(16, 185, 129, 0.2)', padding: '10px', borderRadius: 'var(--radius-md)' }}>
+                        <Users size={22} color="var(--success-color)" />
+                      </div>
+                      <div>
+                        <div className="font-bold" style={{ color: 'var(--success-color)' }}>Club Member ✓</div>
+                        <div className="text-xs text-muted">You're part of this club</div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        className="btn btn-secondary"
+                        style={{ padding: '8px 14px', fontSize: '0.85rem' }}
+                        onClick={() => navigate(`/app/club/${venue.id}/leaderboard`)}
+                      >
+                        <Trophy size={16} /> Leaderboard
+                      </button>
+                      <button
+                        className="btn btn-secondary"
+                        style={{ padding: '8px 14px', fontSize: '0.85rem', color: '#ef4444', borderColor: 'rgba(239,68,68,0.3)' }}
+                        onClick={() => leaveClub(venue.id)}
+                      >
+                        Leave
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  className="btn w-full"
+                  style={{
+                    padding: '16px',
+                    fontSize: '1.05rem',
+                    background: 'linear-gradient(135deg, var(--primary-color), var(--accent-color))',
+                    display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px',
+                  }}
+                  onClick={() => joinClub(venue.id)}
+                >
+                  <Users size={20} /> Join This Club
+                  <span style={{ background: 'rgba(255,255,255,0.2)', padding: '2px 8px', borderRadius: '12px', fontSize: '0.75rem' }}>+200 pts</span>
+                </button>
+              )}
+            </section>
+          );
+        })()}
+
         {/* Check-in Gamification */}
         {hasCheckedInToday ? (
            <div className="p-4 text-center rounded-xl" style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', color: 'var(--success-color)' }}>
@@ -211,7 +265,7 @@ export const VenueDetail: React.FC = () => {
               onClick={handleCheckIn}
               disabled={checkingIn}
             >
-              {checkingIn ? 'Locating...' : 'I\'m Here — Check In'}
+              {checkingIn ? 'Locating...' : "I'm Here — Check In"}
             </button>
             {checkedInMessage && <p className="text-center text-sm mt-2 text-success" style={{ color: 'var(--success-color)' }}>{checkedInMessage}</p>}
           </div>

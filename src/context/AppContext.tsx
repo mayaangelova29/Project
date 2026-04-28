@@ -16,6 +16,9 @@ interface AppState {
   userKeywords: string[];
   checkIns: CheckIn[];
   points: number;
+  joinedClubs: string[];
+  role: 'athlete' | 'venue';
+  venueId: string | null;
 }
 
 interface AppContextProps {
@@ -26,6 +29,8 @@ interface AppContextProps {
   setUserCoords: (coords: Coordinates) => void;
   setUserKeywords: (keywords: string[]) => void;
   addCheckIn: (venueId: string) => void;
+  joinClub: (venueId: string) => void;
+  leaveClub: (venueId: string) => void;
   resetState: () => void;
 }
 
@@ -39,6 +44,9 @@ const defaultState: AppState = {
   userKeywords: [],
   checkIns: [],
   points: 0,
+  joinedClubs: [],
+  role: 'athlete',
+  venueId: null,
 };
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
@@ -48,7 +56,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const saved = localStorage.getItem('vibefit_state');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        // Merge with defaults so newly added fields (like joinedClubs) are never undefined
+        return { ...defaultState, ...parsed };
       } catch (e) {
         return defaultState;
       }
@@ -78,13 +88,29 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       };
     });
   };
+  const joinClub = (venueId: string) => {
+    setState((s) => {
+      if (s.joinedClubs.includes(venueId)) return s;
+      return {
+        ...s,
+        joinedClubs: [...s.joinedClubs, venueId],
+        points: s.points + 200,
+      };
+    });
+  };
+  const leaveClub = (venueId: string) => {
+    setState((s) => ({
+      ...s,
+      joinedClubs: s.joinedClubs.filter((id) => id !== venueId),
+    }));
+  };
   const resetState = () => {
     localStorage.removeItem('vibefit_state');
     setState(defaultState);
   };
 
   return (
-    <AppContext.Provider value={{ state, setAuthenticated, setProfilePhoto, setOnboarded, setUserCoords, setUserKeywords, addCheckIn, resetState }}>
+    <AppContext.Provider value={{ state, setAuthenticated, setProfilePhoto, setOnboarded, setUserCoords, setUserKeywords, addCheckIn, joinClub, leaveClub, resetState }}>
       {children}
     </AppContext.Provider>
   );
