@@ -1,8 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
-import { User, Lock, Mail, BrainCircuit, Trophy, MapPin, LogOut, ArrowRight, CheckCircle2, ArrowLeft, Building2, Dumbbell } from 'lucide-react';
-import { venues as venueList } from '../data/venues';
+import { User, Lock, Mail, BrainCircuit, Trophy, MapPin, LogOut, ArrowRight, CheckCircle2, ArrowLeft, Building2, Dumbbell, Search, Loader2, MapPinned } from 'lucide-react';
+import { addVenue } from '../data/venues';
+
+// --- Nominatim Geocoding Types & Helpers ---
+interface NominatimResult {
+  place_id: number;
+  display_name: string;
+  lat: string;
+  lon: string;
+}
+
+const geocodeAddress = async (query: string): Promise<NominatimResult[]> => {
+  if (!query || query.length < 3) return [];
+  try {
+    const encoded = encodeURIComponent(query);
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encoded}&limit=5&addressdetails=1`,
+      { headers: { 'Accept-Language': 'en' } }
+    );
+    if (!res.ok) return [];
+    return (await res.json()) as NominatimResult[];
+  } catch {
+    return [];
+  }
+};
 
 // Category-to-image mapping for venue registration defaults
 const CATEGORY_IMAGES: Record<string, string> = {
@@ -37,6 +60,51 @@ export const Landing: React.FC = () => {
   const [venueKeywords, setVenueKeywords] = useState<string[]>([]);
   const [acceptsMultisport, setAcceptsMultisport] = useState(false);
   const [freeSession, setFreeSession] = useState(false);
+
+  // Geocoding state
+  const [geocodeResults, setGeocodeResults] = useState<NominatimResult[]>([]);
+  const [selectedGeocode, setSelectedGeocode] = useState<NominatimResult | null>(null);
+  const [isGeocoding, setIsGeocoding] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const geocodeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const addressWrapperRef = useRef<HTMLDivElement>(null);
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (addressWrapperRef.current && !addressWrapperRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Debounced geocoding
+  const handleAddressChange = useCallback((value: string) => {
+    setVenueAddress(value);
+    setSelectedGeocode(null);
+    if (geocodeTimerRef.current) clearTimeout(geocodeTimerRef.current);
+    if (value.length < 3) {
+      setGeocodeResults([]);
+      setShowSuggestions(false);
+      return;
+    }
+    setIsGeocoding(true);
+    geocodeTimerRef.current = setTimeout(async () => {
+      const results = await geocodeAddress(value);
+      setGeocodeResults(results);
+      setShowSuggestions(results.length > 0);
+      setIsGeocoding(false);
+    }, 600);
+  }, []);
+
+  const selectGeocodeSuggestion = (result: NominatimResult) => {
+    setSelectedGeocode(result);
+    setVenueAddress(result.display_name);
+    setShowSuggestions(false);
+    setGeocodeResults([]);
+  };
 
   // Intro state
   const [hasSeenIntro, setHasSeenIntro] = useState(true);
@@ -178,14 +246,18 @@ export const Landing: React.FC = () => {
         body: JSON.stringify(newUser)
       });
 
-      // Add venue to runtime list
+      // Use geocoded coordinates if available, otherwise fallback to Sofia center
+      const lat = selectedGeocode ? parseFloat(selectedGeocode.lat) : 42.6977;
+      const lng = selectedGeocode ? parseFloat(selectedGeocode.lon) : 23.3219;
+
+      // Add venue to runtime list + localStorage persistence
       const imageUrl = CATEGORY_IMAGES[venueCategory] || CATEGORY_IMAGES['Other'];
       const newVenue = {
         id: newVenueId,
         name: venueName,
-        lat: 42.6977 + (Math.random() - 0.5) * 0.05,
-        lng: 23.3219 + (Math.random() - 0.5) * 0.05,
-        address: venueAddress,
+        lat,
+        lng,
+        address: selectedGeocode ? selectedGeocode.display_name : venueAddress,
         keywords: venueKeywords.length > 0 ? venueKeywords : ['friendly', 'clean'],
         rating: 5.0,
         reviewCount: 0,
@@ -194,7 +266,7 @@ export const Landing: React.FC = () => {
         imageUrl,
         description: venueDescription || `${venueName} — a new ${venueCategory.toLowerCase()} on VibeFit.`,
       };
-      venueList.push(newVenue as any);
+      addVenue(newVenue as any);
 
       // Set state and navigate
       const appState = {
@@ -440,11 +512,68 @@ export const Landing: React.FC = () => {
                         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required
                           style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-md)', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-main)', fontSize: '1rem', outline: 'none' }} />
                       </div>
-                      {/* Address */}
-                      <div className="flex flex-col gap-1">
+                      {/* Address with Geocoding */}
+                      <div className="flex flex-col gap-1" ref={addressWrapperRef} style={{ position: 'relative' }}>
                         <label className="text-xs text-muted uppercase font-bold tracking-wider">Address *</label>
-                        <input type="text" value={venueAddress} onChange={(e) => setVenueAddress(e.target.value)} placeholder="123 Main St., Sofia" required
-                          style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-md)', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-main)', fontSize: '1rem', outline: 'none' }} />
+                        <div style={{ position: 'relative' }}>
+                          <div className="flex items-center gap-2" style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-md)', padding: '12px 16px', border: selectedGeocode ? '1px solid var(--success-color)' : '1px solid rgba(255,255,255,0.1)', transition: 'border-color 0.3s' }}>
+                            {isGeocoding ? <Loader2 size={18} className="text-muted" style={{ animation: 'spin 1s linear infinite' }} /> : <Search size={18} className="text-muted" />}
+                            <input type="text" value={venueAddress} onChange={(e) => handleAddressChange(e.target.value)} onFocus={() => { if (geocodeResults.length > 0) setShowSuggestions(true); }}
+                              placeholder="Start typing an address... (e.g. бул. Витоша 1, София)"
+                              required
+                              style={{ background: 'transparent', border: 'none', outline: 'none', color: 'var(--text-main)', width: '100%', fontSize: '1rem' }} />
+                          </div>
+
+                          {/* Geocode Suggestions Dropdown */}
+                          {showSuggestions && geocodeResults.length > 0 && (
+                            <div style={{
+                              position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50, marginTop: '4px',
+                              background: 'rgba(30, 41, 59, 0.98)', backdropFilter: 'blur(16px)',
+                              border: '1px solid rgba(99, 102, 241, 0.3)', borderRadius: 'var(--radius-md)',
+                              boxShadow: '0 12px 40px rgba(0,0,0,0.5)', overflow: 'hidden',
+                              maxHeight: '240px', overflowY: 'auto',
+                            }}>
+                              {geocodeResults.map((r) => (
+                                <button key={r.place_id} type="button"
+                                  onClick={() => selectGeocodeSuggestion(r)}
+                                  style={{
+                                    display: 'flex', alignItems: 'flex-start', gap: '10px', width: '100%',
+                                    padding: '12px 16px', background: 'transparent', border: 'none',
+                                    color: 'var(--text-main)', cursor: 'pointer', textAlign: 'left',
+                                    fontSize: '0.85rem', lineHeight: '1.4', transition: 'background 0.15s',
+                                    borderBottom: '1px solid rgba(255,255,255,0.05)',
+                                  }}
+                                  onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(99,102,241,0.15)'}
+                                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                >
+                                  <MapPinned size={16} style={{ color: 'var(--accent-color)', flexShrink: 0, marginTop: '2px' }} />
+                                  <span>{r.display_name}</span>
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Selected location confirmation + Map Preview */}
+                        {selectedGeocode && (
+                          <div style={{ marginTop: '8px' }}>
+                            <div className="flex items-center gap-2" style={{ marginBottom: '8px' }}>
+                              <CheckCircle2 size={14} color="var(--success-color)" />
+                              <span className="text-xs" style={{ color: 'var(--success-color)' }}>Location found — coordinates: {parseFloat(selectedGeocode.lat).toFixed(4)}, {parseFloat(selectedGeocode.lon).toFixed(4)}</span>
+                            </div>
+                            <div style={{
+                              borderRadius: 'var(--radius-md)', overflow: 'hidden',
+                              border: '1px solid rgba(255,255,255,0.1)', height: '180px',
+                            }}>
+                              <iframe
+                                title="Venue Location Preview"
+                                width="100%" height="180"
+                                style={{ border: 0 }}
+                                src={`https://www.openstreetmap.org/export/embed.html?bbox=${parseFloat(selectedGeocode.lon) - 0.005}%2C${parseFloat(selectedGeocode.lat) - 0.003}%2C${parseFloat(selectedGeocode.lon) + 0.005}%2C${parseFloat(selectedGeocode.lat) + 0.003}&layer=mapnik&marker=${selectedGeocode.lat}%2C${selectedGeocode.lon}`}
+                              />
+                            </div>
+                          </div>
+                        )}
                       </div>
                       {/* Category */}
                       <div className="flex flex-col gap-1">

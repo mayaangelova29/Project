@@ -16,6 +16,30 @@ export interface Venue {
 
 // Sofia center approx: 42.6977° N, 23.3219° E
 // We generate a robust list around Sofia based on verified, real-world sports facilities.
+
+// --- User-created venue persistence ---
+const USER_VENUES_KEY = 'vibefit_user_venues';
+
+function loadUserVenues(): Venue[] {
+  try {
+    const raw = localStorage.getItem(USER_VENUES_KEY);
+    if (raw) return JSON.parse(raw) as Venue[];
+  } catch { /* ignore */ }
+  return [];
+}
+
+function saveUserVenues(userVenues: Venue[]): void {
+  localStorage.setItem(USER_VENUES_KEY, JSON.stringify(userVenues));
+}
+
+/** Add a new venue to the runtime list and persist it across reloads. */
+export function addVenue(venue: Venue): void {
+  venues.push(venue);
+  const existing = loadUserVenues();
+  existing.push(venue);
+  saveUserVenues(existing);
+}
+
 export const venues: Venue[] = [
   {
     id: "v1",
@@ -310,3 +334,6 @@ export const venues: Venue[] = [
     description: "An amazing bouldering gym situated inside the mall. Fun problem-solving routes and a super chill community."
   }
 ];
+
+// Append any user-created venues from localStorage on module init
+loadUserVenues().forEach((v) => venues.push(v));
