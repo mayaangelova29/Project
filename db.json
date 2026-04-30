@@ -20,6 +20,112 @@
       "role": "venue",
       "venueId": "v1777355498488",
       "id": "HdIIAlEGkLg"
+    },
+    {
+      "email": "testgeo@venue.com",
+      "name": "Test Fitness Studio",
+      "password": "testpass123",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "v1777357769719",
+      "id": "Kz1lOrynKJA"
+    },
+    {
+      "email": "jkljlk@gmail.com",
+      "name": "hjhlkj",
+      "password": "123",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "v1777530532746",
+      "id": "vs8Jt_Ne3ic"
+    },
+    {
+      "email": "athlete@test.com",
+      "name": "Test Athlete",
+      "password": "1234",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "v1777531143889",
+      "id": "3nUHcUY2epU"
+    },
+    {
+      "email": "athlete2@test.com",
+      "name": "Test Athlete",
+      "password": "test123",
+      "hasOnboarded": false,
+      "points": 0,
+      "checkIns": [],
+      "role": "athlete",
+      "id": "ePpcvRdtJRA"
+    },
+    {
+      "email": "gym@test.com",
+      "name": "Sofia Power Gym",
+      "password": "test123",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "v1777531577196",
+      "id": "5mXKZS3PDg8"
+    },
+    {
+      "email": "boxing@test.com",
+      "name": "Downtown Boxing Club",
+      "password": "test123",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "v1777532890502",
+      "id": "QLqPwFKLWhk"
+    },
+    {
+      "email": "maya@test.com",
+      "name": "Maya",
+      "password": "test123",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "athlete",
+      "id": "P3PECMSf-y8"
+    },
+    {
+      "email": "crossfit@test.com",
+      "name": "Arena CrossFit",
+      "password": "test123",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "v1777534073439",
+      "id": "HNQhce8umXU"
+    }
+  ],
+  "venues": [
+    {
+      "id": "8aW6XAbjypo",
+      "name": "Arena CrossFit",
+      "lat": 42.6847601,
+      "lng": 23.3189417,
+      "address": "National Palace of Culture, 1, Bulgaria Sq., Centre, Sofia, Triadica, Sofia City, Sofia-City, 1414, Bulgaria",
+      "keywords": [
+        "intense",
+        "community-focused",
+        "fast-paced"
+      ],
+      "rating": 5,
+      "reviewCount": 0,
+      "acceptsMultisport": false,
+      "freeSession": false,
+      "imageUrl": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80",
+      "description": "Arena CrossFit — a new crossfit on VibeFit."
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

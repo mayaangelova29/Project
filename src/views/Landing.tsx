@@ -250,7 +250,7 @@ export const Landing: React.FC = () => {
       const lat = selectedGeocode ? parseFloat(selectedGeocode.lat) : 42.6977;
       const lng = selectedGeocode ? parseFloat(selectedGeocode.lon) : 23.3219;
 
-      // Add venue to runtime list + localStorage persistence
+      // Add venue to runtime list + JSON server persistence
       const imageUrl = CATEGORY_IMAGES[venueCategory] || CATEGORY_IMAGES['Other'];
       const newVenue = {
         id: newVenueId,
@@ -266,7 +266,7 @@ export const Landing: React.FC = () => {
         imageUrl,
         description: venueDescription || `${venueName} — a new ${venueCategory.toLowerCase()} on VibeFit.`,
       };
-      addVenue(newVenue as any);
+      await addVenue(newVenue as any);
 
       // Set state and navigate
       const appState = {

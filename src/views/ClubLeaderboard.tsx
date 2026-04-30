@@ -1,43 +1,30 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { venues } from '../data/venues';
-import { ChevronLeft, Trophy, Medal, Star, MapPin } from 'lucide-react';
-
-// Deterministic mock members per club using the venue id as a seed
-function generateMockMembers(venueId: string) {
-  // Simple hash from venue id to get pseudo-random but stable numbers
-  let seed = 0;
-  for (let i = 0; i < venueId.length; i++) {
-    seed = ((seed << 5) - seed + venueId.charCodeAt(i)) | 0;
-  }
-  const abs = (n: number) => (n < 0 ? -n : n);
-
-  const firstNames = ['Stefan', 'Dimitar', 'Nikolay', 'Borislav', 'Kaloyan', 'Presiana', 'Tsvetelina', 'Desislava', 'Emilia', 'Viktoriya', 'Radoslav', 'Plamen'];
-  const lastInitials = ['K.', 'S.', 'D.', 'T.', 'V.', 'M.', 'P.', 'I.', 'G.', 'B.', 'R.', 'L.'];
-
-  const count = 5 + abs(seed % 4); // 5-8 mock members
-  const members = [];
-  for (let i = 0; i < count; i++) {
-    const nameIdx = abs((seed + i * 7) % firstNames.length);
-    const initialIdx = abs((seed + i * 13) % lastInitials.length);
-    const checkIns = Math.max(1, abs((seed * (i + 1)) % 30));
-    members.push({
-      id: `mock-${venueId}-${i}`,
-      name: `${firstNames[nameIdx]} ${lastInitials[initialIdx]}`,
-      checkIns,
-      avatar: `https://i.pravatar.cc/150?u=${venueId}-${i}`,
-    });
-  }
-  return members;
-}
+import { ChevronLeft, Trophy, Medal, Star, MapPin, Users } from 'lucide-react';
 
 export const ClubLeaderboard: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { state } = useAppContext();
+  const [dbUsers, setDbUsers] = useState<any[]>([]);
 
   const venue = useMemo(() => venues.find((v) => v.id === id), [id]);
+
+  // Fetch real users from DB
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/users');
+        const users = await response.json();
+        setDbUsers(users);
+      } catch (error) {
+        console.error("Failed to fetch users", error);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const myCheckIns = useMemo(() => {
     if (!venue) return 0;
@@ -46,15 +33,28 @@ export const ClubLeaderboard: React.FC = () => {
 
   const leaderboard = useMemo(() => {
     if (!venue) return [];
-    const mocks = generateMockMembers(venue.id);
+
+    // Real DB users who have checked in at this venue
+    const realMembers = dbUsers
+      .filter(u => u.role === 'athlete' && u.email !== state.email)
+      .map(u => ({
+        id: u.id,
+        name: u.name,
+        checkIns: (u.checkIns || []).filter((c: any) => c.venueId === venue.id).length,
+        avatar: u.profilePhoto || `https://i.pravatar.cc/150?u=${u.id}`,
+      }))
+      .filter(m => m.checkIns > 0);
+
+    // Current user
     const me = {
       id: 'me',
       name: state.userName || 'You',
       checkIns: myCheckIns,
       avatar: state.profilePhoto || 'https://i.pravatar.cc/150?u=me',
     };
-    return [...mocks, me].sort((a, b) => b.checkIns - a.checkIns);
-  }, [venue, myCheckIns, state.userName, state.profilePhoto]);
+
+    return [...realMembers, me].sort((a, b) => b.checkIns - a.checkIns);
+  }, [venue, dbUsers, myCheckIns, state.userName, state.profilePhoto, state.email]);
 
   const myRank = leaderboard.findIndex((u) => u.id === 'me') + 1;
 
@@ -137,42 +137,52 @@ export const ClubLeaderboard: React.FC = () => {
         <Trophy size={16} color="#f59e0b" /> Club Rankings
       </h3>
 
-      <div className="flex flex-col gap-3">
-        {leaderboard.map((user, index) => {
-          const isMe = user.id === 'me';
-          return (
-            <div
-              key={user.id}
-              className="card flex items-center p-3"
-              style={{
-                border: isMe ? '1px solid var(--primary-color)' : '1px solid rgba(255,255,255,0.05)',
-                background: isMe ? 'rgba(99,102,241,0.1)' : undefined,
-              }}
-            >
-              <div style={{ width: '30px', fontWeight: 'bold', color: index < 3 ? '#f59e0b' : 'var(--text-muted)' }}>
-                {index === 0 && <Medal size={20} color="#f59e0b" />}
-                {index === 1 && <Medal size={20} color="#94a3b8" />}
-                {index === 2 && <Medal size={20} color="#b45309" />}
-                {index > 2 && `#${index + 1}`}
-              </div>
+      {leaderboard.length <= 1 ? (
+        <div className="card text-center p-8" style={{ background: 'rgba(99, 102, 241, 0.05)', border: '1px dashed rgba(99, 102, 241, 0.3)' }}>
+          <Users size={40} color="var(--text-muted)" className="mx-auto mb-3" style={{ opacity: 0.5 }} />
+          <h3 className="text-lg mb-2">Be the first!</h3>
+          <p className="text-muted text-sm">
+            Check in at this venue to start climbing the leaderboard. Invite friends to compete!
+          </p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {leaderboard.map((user, index) => {
+            const isMe = user.id === 'me';
+            return (
+              <div
+                key={user.id}
+                className="card flex items-center p-3"
+                style={{
+                  border: isMe ? '1px solid var(--primary-color)' : '1px solid rgba(255,255,255,0.05)',
+                  background: isMe ? 'rgba(99,102,241,0.1)' : undefined,
+                }}
+              >
+                <div style={{ width: '30px', fontWeight: 'bold', color: index < 3 ? '#f59e0b' : 'var(--text-muted)' }}>
+                  {index === 0 && <Medal size={20} color="#f59e0b" />}
+                  {index === 1 && <Medal size={20} color="#94a3b8" />}
+                  {index === 2 && <Medal size={20} color="#b45309" />}
+                  {index > 2 && `#${index + 1}`}
+                </div>
 
-              <img
-                src={user.avatar}
-                alt={user.name}
-                style={{ width: '40px', height: '40px', borderRadius: '50%', margin: '0 12px' }}
-              />
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  style={{ width: '40px', height: '40px', borderRadius: '50%', margin: '0 12px' }}
+                />
 
-              <div className="flex-1 font-bold">
-                {user.name} {isMe && <span style={{ color: 'var(--primary-color)', fontWeight: 'normal', fontSize: '0.8rem' }}>(You)</span>}
-              </div>
+                <div className="flex-1 font-bold">
+                  {user.name} {isMe && <span style={{ color: 'var(--primary-color)', fontWeight: 'normal', fontSize: '0.8rem' }}>(You)</span>}
+                </div>
 
-              <div className="font-mono text-sm">
-                {user.checkIns} visit{user.checkIns !== 1 ? 's' : ''}
+                <div className="font-mono text-sm">
+                  {user.checkIns} visit{user.checkIns !== 1 ? 's' : ''}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,10 +1,11 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, MapPin, Star, Navigation, Phone, CheckCircle, ExternalLink, Users, Trophy } from 'lucide-react';
+import { ChevronLeft, MapPin, Star, Navigation, CheckCircle, ExternalLink, Users, Trophy } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { venues } from '../data/venues';
 import { calculateVibeMatch } from '../utils/matching';
-import { fetchGooglePlacePhoto } from '../utils/googlePlaces';
+import { getCurrentLocation, calculateDistance } from '../utils/geolocation';
+import type { Coordinates } from '../utils/geolocation';
 
 export const VenueDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,22 +15,22 @@ export const VenueDetail: React.FC = () => {
   const [checkedInMessage, setCheckedInMessage] = useState<string | null>(null);
 
   const venue = useMemo(() => venues.find((v) => v.id === id), [id]);
-  const [photoUrl, setPhotoUrl] = useState<string>('');
 
-  // Setup initial photo url
-  useEffect(() => {
-    if (venue) setPhotoUrl(venue.imageUrl);
-  }, [venue]);
+  const [userLocation, setUserLocation] = useState<Coordinates | null>(state.userCoords);
 
-  // Try fetching API photo
+  // Get GPS if we don't have it
   useEffect(() => {
-    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-    if (apiKey && venue) {
-      fetchGooglePlacePhoto(venue.name, venue.address, apiKey).then(url => {
-        if (url) setPhotoUrl(url);
-      });
+    if (!userLocation) {
+      getCurrentLocation()
+        .then(setUserLocation)
+        .catch(() => setUserLocation({ lat: 42.6977, lng: 23.3219 }));
     }
-  }, [venue]);
+  }, []);
+
+  const distanceKm = useMemo(() => {
+    if (!userLocation || !venue) return null;
+    return calculateDistance(userLocation, { lat: venue.lat, lng: venue.lng });
+  }, [userLocation, venue]);
 
   const hasCheckedInToday = useMemo(() => {
     if (!venue) return false;
@@ -70,7 +71,7 @@ export const VenueDetail: React.FC = () => {
           <ChevronLeft size={24} />
         </button>
         <img 
-          src={photoUrl || venue.imageUrl} 
+          src={venue.imageUrl} 
           alt={venue.name} 
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
@@ -94,38 +95,45 @@ export const VenueDetail: React.FC = () => {
           </div>
         </div>
         
-        <p className="text-muted flex items-center gap-1 text-sm mb-6">
+        <p className="text-muted flex items-center gap-1 text-sm mb-2">
           <MapPin size={16} /> {venue.address}
         </p>
+        {distanceKm !== null && (
+          <p className="flex items-center gap-1 text-sm mb-6" style={{ color: 'var(--primary-color)', fontWeight: 600 }}>
+            <Navigation size={14} /> {distanceKm.toFixed(1)} km from your location
+          </p>
+        )}
 
         {/* Actions Row */}
         <div className="flex gap-4 mb-8">
           <a 
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue.mapQuery || (venue.name + ', Sofia'))}`} 
+            href={`https://www.google.com/maps/dir/?api=1&destination=${venue.lat},${venue.lng}`} 
             target="_blank" 
             rel="noreferrer"
             className="flex-1 btn btn-secondary" 
             style={{ padding: '10px', textDecoration: 'none' }}
           >
-            <Navigation size={18} /> Open in Maps
+            <Navigation size={18} /> Get Directions
           </a>
           <a 
-            href="tel:+359888123456"
+            href={`https://www.google.com/maps/search/?api=1&query=${venue.lat},${venue.lng}`} 
+            target="_blank" 
+            rel="noreferrer"
             className="flex-1 btn btn-secondary" 
             style={{ padding: '10px', textDecoration: 'none' }}
           >
-            <Phone size={18} /> Call
+            <MapPin size={18} /> View on Google Maps
           </a>
         </div>
 
-        {/* Map Widget */}
+        {/* Map Widget — OpenStreetMap */}
         <div style={{ width: '100%', height: '300px', borderRadius: 'var(--radius-lg)', overflow: 'hidden', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.1)' }}>
           <iframe 
             width="100%" 
             height="100%" 
             frameBorder="0" 
             style={{ border: 0 }} 
-            src={`https://maps.google.com/maps?q=${encodeURIComponent(venue.mapQuery || (venue.name + ', Sofia'))}&t=m&z=15&output=embed&iwloc=`} 
+            src={`https://www.openstreetmap.org/export/embed.html?bbox=${venue.lng - 0.008}%2C${venue.lat - 0.005}%2C${venue.lng + 0.008}%2C${venue.lat + 0.005}&layer=mapnik&marker=${venue.lat}%2C${venue.lng}`}
             allowFullScreen 
             title={`Map for ${venue.name}`}
           ></iframe>
@@ -175,25 +183,25 @@ export const VenueDetail: React.FC = () => {
           </div>
         </section>
 
-        {/* Mock Google Reviews */}
+        {/* Rating */}
         <section className="mb-8 p-4 rounded-xl" style={{ border: '1px solid rgba(255,255,255,0.05)' }}>
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-md m-0">Google Reviews</h3>
+            <h3 className="text-md m-0">Rating</h3>
             <div className="flex items-center gap-1 font-bold">
-              <Star size={16} fill="#f59e0b" color="#f59e0b" /> {venue.rating} <span className="text-muted text-xs font-normal">({venue.reviewCount})</span>
+              <Star size={16} fill="#f59e0b" color="#f59e0b" /> {venue.rating}
             </div>
           </div>
           <p className="text-sm text-muted italic">
             "Vibe extraction: Users frequently mention words like <strong>{venue.keywords.slice(0,2).join(' and ')}</strong> here."
           </p>
           <a 
-            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue.name + ' ' + venue.address)}`} 
+            href={`https://www.google.com/maps/search/?api=1&query=${venue.lat},${venue.lng}`} 
             target="_blank" 
             rel="noreferrer" 
             className="flex items-center gap-1 text-sm mt-3" 
             style={{ color: 'var(--accent-color)', textDecoration: 'none' }}
           >
-            Read all reviews on Google <ExternalLink size={14} />
+            View on Google Maps <ExternalLink size={14} />
           </a>
         </section>
 

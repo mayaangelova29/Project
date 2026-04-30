@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { MatchedVenue } from '../utils/matching';
 import { MapPin, Star, CheckCircle } from 'lucide-react';
-import { fetchGooglePlacePhoto } from '../utils/googlePlaces';
 
 interface Props {
   venue: MatchedVenue;
@@ -10,16 +9,6 @@ interface Props {
 
 export const VenueCard: React.FC<Props> = ({ venue }) => {
   const navigate = useNavigate();
-  const [photoUrl, setPhotoUrl] = useState<string>(venue.imageUrl);
-
-  useEffect(() => {
-    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-    if (apiKey) {
-      fetchGooglePlacePhoto(venue.name, venue.address, apiKey).then(url => {
-        if (url) setPhotoUrl(url);
-      });
-    }
-  }, [venue.name, venue.address, venue.imageUrl]);
 
   // Color mapping based on score
   let matchColor = 'var(--accent-color)'; // default blue
@@ -34,7 +23,7 @@ export const VenueCard: React.FC<Props> = ({ venue }) => {
     >
       <div style={{ position: 'relative', height: '140px' }}>
         <img 
-          src={photoUrl} 
+          src={venue.imageUrl} 
           alt={venue.name} 
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
@@ -76,7 +65,7 @@ export const VenueCard: React.FC<Props> = ({ venue }) => {
           </span>
           <span className="flex items-center gap-1">
             <Star size={14} color="#f59e0b" fill="#f59e0b" /> 
-            {venue.rating} ({venue.reviewCount})
+            {venue.rating}
           </span>
         </div>
 

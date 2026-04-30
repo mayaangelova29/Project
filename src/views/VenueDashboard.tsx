@@ -1,15 +1,49 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { venues } from '../data/venues';
 import { MapPin, Star, Users, CheckCircle, TrendingUp, Eye } from 'lucide-react';
 
 export const VenueDashboard: React.FC = () => {
   const { state } = useAppContext();
+  const [dbUsers, setDbUsers] = useState<any[]>([]);
 
   const myVenue = useMemo(() => {
     if (!state.venueId) return null;
     return venues.find((v) => v.id === state.venueId) || null;
   }, [state.venueId]);
+
+  // Fetch real users from DB to count members
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/users');
+        const users = await response.json();
+        setDbUsers(users);
+      } catch (error) {
+        console.error("Failed to fetch users", error);
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  // Calculate real stats
+  const totalMembers = useMemo(() => {
+    if (!myVenue) return 0;
+    // Count athletes who have checked in or joined this venue's club
+    return dbUsers.filter(u =>
+      u.role === 'athlete' && (
+        (u.checkIns || []).some((c: any) => c.venueId === myVenue.id) ||
+        (u.joinedClubs || []).includes(myVenue.id)
+      )
+    ).length;
+  }, [dbUsers, myVenue]);
+
+  const totalCheckIns = useMemo(() => {
+    if (!myVenue) return 0;
+    return dbUsers.reduce((sum, u) => {
+      return sum + (u.checkIns || []).filter((c: any) => c.venueId === myVenue.id).length;
+    }, 0);
+  }, [dbUsers, myVenue]);
 
   if (!myVenue) {
     return (
@@ -19,11 +53,6 @@ export const VenueDashboard: React.FC = () => {
       </div>
     );
   }
-
-  // Simulate stats
-  const totalMembers = Math.floor(Math.random() * 50) + 10;
-  const totalCheckIns = myVenue.reviewCount;
-  const viewsThisWeek = Math.floor(Math.random() * 200) + 50;
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -70,8 +99,8 @@ export const VenueDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid-cards mb-6" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+      {/* Stats Grid — Real data only */}
+      <div className="grid-cards mb-6" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
         <div className="card text-center p-4">
           <Users size={24} color="var(--primary-color)" className="mx-auto mb-2" />
           <div className="text-2xl font-bold" style={{ color: 'var(--primary-color)' }}>{totalMembers}</div>
@@ -81,11 +110,6 @@ export const VenueDashboard: React.FC = () => {
           <CheckCircle size={24} color="var(--success-color)" className="mx-auto mb-2" />
           <div className="text-2xl font-bold" style={{ color: 'var(--success-color)' }}>{totalCheckIns}</div>
           <div className="text-xs text-muted mt-1 uppercase tracking-wider font-bold">Check-ins</div>
-        </div>
-        <div className="card text-center p-4">
-          <Eye size={24} color="var(--accent-color)" className="mx-auto mb-2" />
-          <div className="text-2xl font-bold" style={{ color: 'var(--accent-color)' }}>{viewsThisWeek}</div>
-          <div className="text-xs text-muted mt-1 uppercase tracking-wider font-bold">Views / Week</div>
         </div>
       </div>
 
