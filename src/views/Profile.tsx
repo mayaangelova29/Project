@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
-import { LogOut, User as UserIcon, Star, CheckCircle, RefreshCw } from 'lucide-react';
+import { LogOut, User as UserIcon, Star, CheckCircle, RefreshCw, Camera } from 'lucide-react';
 
 export const Profile: React.FC = () => {
   const { state, setProfilePhoto, resetState } = useAppContext();
@@ -65,8 +65,18 @@ export const Profile: React.FC = () => {
             <UserIcon size={40} color="var(--primary-color)" />
           )}
         </label>
-        <h1 className="text-2xl mb-1">{state.userName || 'Athlete'}</h1>
-        <p className="text-muted text-sm">VibeFit Member</p>
+        <h1 className="text-2xl mb-1 mt-4">{state.userName || 'Athlete'}</h1>
+        <p className="text-muted text-sm mb-4">VibeFit Member</p>
+        
+        <label className="btn btn-secondary inline-flex items-center gap-2 mx-auto" style={{ cursor: 'pointer', padding: '8px 16px', fontSize: '0.85rem', width: 'fit-content' }}>
+          <Camera size={16} /> Change Photo
+          <input 
+            type="file" 
+            accept="image/*" 
+            style={{ display: 'none' }} 
+            onChange={handlePhotoUpload} 
+          />
+        </label>
       </div>
 
       <div className="grid-cards mb-6" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>

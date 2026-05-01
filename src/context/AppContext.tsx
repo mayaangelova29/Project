@@ -7,6 +7,7 @@ interface CheckIn {
 }
 
 interface AppState {
+  id: string | null;
   isAuthenticated: boolean;
   userName: string | null;
   email: string | null;
@@ -23,6 +24,7 @@ interface AppState {
 
 interface AppContextProps {
   state: AppState;
+  loginUser: (user: Partial<AppState>) => void;
   setAuthenticated: (status: boolean, name?: string, email?: string) => void;
   setProfilePhoto: (photo: string) => void;
   setOnboarded: (status: boolean) => void;
@@ -35,6 +37,7 @@ interface AppContextProps {
 }
 
 const defaultState: AppState = {
+  id: null,
   isAuthenticated: false,
   userName: null,
   email: null,
@@ -68,7 +71,48 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   useEffect(() => {
     localStorage.setItem('vibefit_state', JSON.stringify(state));
+    
+    // Sync to backend if authenticated and we have an ID
+    if (state.isAuthenticated && state.id) {
+       fetch(`http://localhost:3001/users/${state.id}`, {
+         method: 'PATCH',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({
+           points: state.points,
+           checkIns: state.checkIns,
+           joinedClubs: state.joinedClubs,
+           userKeywords: state.userKeywords,
+           profilePhoto: state.profilePhoto
+         })
+       }).catch(console.error);
+    }
   }, [state]);
+
+  // Recovery mechanism for existing sessions missing an ID
+  useEffect(() => {
+    if (state.isAuthenticated && !state.id && state.email) {
+      fetch(`http://localhost:3001/users?email=${state.email}`)
+        .then(res => res.json())
+        .then(users => {
+          if (users.length > 0) {
+            const user = users[0];
+            loginUser({
+              id: user.id,
+              checkIns: user.checkIns || [],
+              points: user.points || 0,
+              joinedClubs: user.joinedClubs || [],
+              userKeywords: user.userKeywords || [],
+              profilePhoto: user.profilePhoto || null,
+            });
+          }
+        })
+        .catch(console.error);
+    }
+  }, [state.isAuthenticated, state.id, state.email]);
+
+  const loginUser = (user: Partial<AppState>) => {
+    setState((s) => ({ ...s, isAuthenticated: true, ...user }));
+  };
 
   const setAuthenticated = (isAuthenticated: boolean, userName?: string, email?: string) => {
     setState((s) => ({ ...s, isAuthenticated, userName: userName || s.userName, email: email || s.email }));
@@ -110,7 +154,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   return (
-    <AppContext.Provider value={{ state, setAuthenticated, setProfilePhoto, setOnboarded, setUserCoords, setUserKeywords, addCheckIn, joinClub, leaveClub, resetState }}>
+    <AppContext.Provider value={{ state, loginUser, setAuthenticated, setProfilePhoto, setOnboarded, setUserCoords, setUserKeywords, addCheckIn, joinClub, leaveClub, resetState }}>
       {children}
     </AppContext.Provider>
   );

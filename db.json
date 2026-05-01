@@ -5,8 +5,16 @@
       "name": "Maya Angelova",
       "password": "1234567",
       "hasOnboarded": true,
-      "points": 0,
-      "checkIns": [],
+      "points": 100,
+      "checkIns": [
+        {
+          "venueId": "WlKhQFhndSo",
+          "timestamp": "2026-05-01T10:00:00.000Z"
+        }
+      ],
+      "joinedClubs": [
+        "WlKhQFhndSo"
+      ],
       "role": "athlete",
       "id": "kPs3Bz29vTk"
     },
@@ -97,35 +105,93 @@
       "id": "P3PECMSf-y8"
     },
     {
-      "email": "crossfit@test.com",
-      "name": "Arena CrossFit",
-      "password": "test123",
+      "email": "sredec@gmail.com",
+      "name": "Танцов Ансамбъл \"Средец\"",
+      "password": "3333333",
       "hasOnboarded": true,
       "points": 0,
       "checkIns": [],
       "role": "venue",
-      "venueId": "v1777534073439",
-      "id": "HNQhce8umXU"
+      "venueId": "WlKhQFhndSo",
+      "id": "fVDg72IdiVk",
+      "joinedClubs": [],
+      "userKeywords": [],
+      "profilePhoto": null
+    },
+    {
+      "email": "ta.sredec@gmail.com",
+      "name": "Танцов ансамбъл \"Средец\"",
+      "password": "1111111",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "WlKhQFhndSo",
+      "id": "L7kjwe7OgIs"
+    },
+    {
+      "email": "sofia6@gmail.com",
+      "name": "Фолклорен Танцов Ансамбъл \"София-6\"",
+      "password": "111111",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "5Qd1aHvxd6M",
+      "id": "X_r1rWwPfgc",
+      "joinedClubs": [],
+      "userKeywords": [],
+      "profilePhoto": null
     }
   ],
   "venues": [
     {
-      "id": "8aW6XAbjypo",
-      "name": "Arena CrossFit",
-      "lat": 42.6847601,
-      "lng": 23.3189417,
-      "address": "National Palace of Culture, 1, Bulgaria Sq., Centre, Sofia, Triadica, Sofia City, Sofia-City, 1414, Bulgaria",
+      "id": "WlKhQFhndSo",
+      "name": "Танцов Ансамбъл \"Средец\"",
+      "lat": 42.697681,
+      "lng": 23.337652,
+      "address": "София център, ул. „Кракра“ 2А, 1504 София",
       "keywords": [
         "intense",
         "community-focused",
-        "fast-paced"
+        "strict",
+        "friendly",
+        "cardio",
+        "beginner-friendly",
+        "technique-focused"
       ],
       "rating": 5,
       "reviewCount": 0,
       "acceptsMultisport": false,
       "freeSession": false,
-      "imageUrl": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80",
-      "description": "Arena CrossFit — a new crossfit on VibeFit."
+      "imageUrl": "https://time4.dance/ads/FB-post-image-narodni-tanci.jpg?ver=1",
+      "description": "Съставът представя Столична община в редица местни, национални и международни събития пред разнообразна аудитория. Танцов ансамбъл „Средец“ – най-старият фолклорен танцов ансамбъл в България. Участва в концерти на малка и голяма сцена, фестивали, конкурси и събития, свързани с културния живот не само в гр. София, но и в страната и чужбина.",
+      "mapQuery": "https://maps.app.goo.gl/an3BK8diCZ2EWWjW8"
+    },
+    {
+      "name": "Фолклорен Танцов Ансамбъл \"София-6\"",
+      "lat": 42.6977,
+      "lng": 23.3219,
+      "address": "ж.к. Бъкстон, ул. „Ген. Александър В. Суворов“ 68, 1619 София",
+      "keywords": [
+        "intense",
+        "community-focused",
+        "friendly",
+        "strict",
+        "pro-level",
+        "beginner-friendly",
+        "technique-focused",
+        "cardio",
+        "fast-paced"
+      ],
+      "rating": 5,
+      "reviewCount": 0,
+      "acceptsMultisport": false,
+      "freeSession": true,
+      "imageUrl": "https://time4.dance/ads/FB-post-image-narodni-tanci.jpg?ver=1",
+      "description": "Ансамбъл с над 50 години история, известен с участия по целия свят и хиляди изяви в България. Носител е на множество международни и национални награди, включително престижни отличия като „Златна лира“ и „Кристално огърлие“. Отличен е и като „Най-добър ансамбъл на България“ за 2023 и 2025 г.\n\nОрганизатор е на Международния фолклорен фестивал „Витоша“ в София.\n\nРепетициите се водят от главния художествен ръководител и хореограф Николай Несторов и са насочени както към усвояване на български народни танци, така и към сценично представяне на високо ниво.",
+      "mapQuery": "https://maps.app.goo.gl/Gho6QzvexoUzcqY67",
+      "id": "5Qd1aHvxd6M"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

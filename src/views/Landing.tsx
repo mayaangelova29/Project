@@ -15,13 +15,31 @@ interface NominatimResult {
 const geocodeAddress = async (query: string): Promise<NominatimResult[]> => {
   if (!query || query.length < 3) return [];
   try {
+    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    if (!apiKey || apiKey === 'your_key_here') {
+      const encoded = encodeURIComponent(query);
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encoded}&limit=5&addressdetails=1`,
+        { headers: { 'Accept-Language': 'en' } }
+      );
+      if (!res.ok) return [];
+      return (await res.json()) as NominatimResult[];
+    }
+
     const encoded = encodeURIComponent(query);
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encoded}&limit=5&addressdetails=1`,
-      { headers: { 'Accept-Language': 'en' } }
-    );
+    const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encoded}&key=${apiKey}`);
     if (!res.ok) return [];
-    return (await res.json()) as NominatimResult[];
+    const data = await res.json();
+    
+    if (data.status === 'OK') {
+       return data.results.map((r: any) => ({
+           place_id: r.place_id || Math.random(),
+           display_name: r.formatted_address,
+           lat: r.geometry.location.lat.toString(),
+           lon: r.geometry.location.lng.toString()
+       }));
+    }
+    return [];
   } catch {
     return [];
   }
@@ -49,13 +67,14 @@ export const Landing: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [selectedRole, setSelectedRole] = useState<'athlete' | 'venue' | null>(null);
-  const { state, setAuthenticated, setOnboarded, resetState } = useAppContext();
+  const { state, loginUser, setAuthenticated, setOnboarded, resetState } = useAppContext();
   const navigate = useNavigate();
 
   // Venue registration fields
   const [venueName, setVenueName] = useState('');
   const [venueAddress, setVenueAddress] = useState('');
   const [venueDescription, setVenueDescription] = useState('');
+  const [googleMapsLink, setGoogleMapsLink] = useState('');
   const [venueCategory, setVenueCategory] = useState('Gym');
   const [venueKeywords, setVenueKeywords] = useState<string[]>([]);
   const [acceptsMultisport, setAcceptsMultisport] = useState(false);
@@ -152,15 +171,19 @@ export const Landing: React.FC = () => {
 
           if (user) {
             if (user.password === password) {
-              setAuthenticated(true, user.name, user.email);
-              // Set role in state
-              const appState = JSON.parse(localStorage.getItem('vibefit_state') || '{}');
-              appState.role = user.role || 'athlete';
-              appState.venueId = user.venueId || null;
-              appState.isAuthenticated = true;
-              appState.userName = user.name;
-              appState.email = user.email;
-              localStorage.setItem('vibefit_state', JSON.stringify(appState));
+              loginUser({
+                id: user.id,
+                role: user.role || 'athlete',
+                venueId: user.venueId || null,
+                userName: user.name,
+                email: user.email,
+                hasOnboarded: user.hasOnboarded,
+                checkIns: user.checkIns || [],
+                points: user.points || 0,
+                joinedClubs: user.joinedClubs || [],
+                userKeywords: user.userKeywords || [],
+                profilePhoto: user.profilePhoto || null,
+              });
 
               if (user.role === 'venue') {
                 // Venue login — reload to pick up state
@@ -193,13 +216,23 @@ export const Landing: React.FC = () => {
           }
 
           const newUser = { email, name, password, hasOnboarded: false, points: 0, checkIns: [], role: 'athlete' };
-          await fetch('http://localhost:3001/users', {
+          const signupRes = await fetch('http://localhost:3001/users', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newUser)
           });
+          const createdUser = await signupRes.json();
 
-          setAuthenticated(true, name, email);
+          loginUser({
+            id: createdUser.id,
+            role: 'athlete',
+            userName: name,
+            email,
+            hasOnboarded: false,
+            points: 0,
+            checkIns: [],
+            joinedClubs: [],
+          });
           navigate('/onboarding');
         } catch (error) {
           console.error("Sign up failed", error);
@@ -226,26 +259,6 @@ export const Landing: React.FC = () => {
         return;
       }
 
-      // Generate a unique venue ID
-      const newVenueId = 'v' + Date.now();
-
-      // Create user account for the venue
-      const newUser = {
-        email,
-        name: venueName,
-        password,
-        hasOnboarded: true,
-        points: 0,
-        checkIns: [],
-        role: 'venue',
-        venueId: newVenueId,
-      };
-      await fetch('http://localhost:3001/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newUser)
-      });
-
       // Use geocoded coordinates if available, otherwise fallback to Sofia center
       const lat = selectedGeocode ? parseFloat(selectedGeocode.lat) : 42.6977;
       const lng = selectedGeocode ? parseFloat(selectedGeocode.lon) : 23.3219;
@@ -253,7 +266,6 @@ export const Landing: React.FC = () => {
       // Add venue to runtime list + JSON server persistence
       const imageUrl = CATEGORY_IMAGES[venueCategory] || CATEGORY_IMAGES['Other'];
       const newVenue = {
-        id: newVenueId,
         name: venueName,
         lat,
         lng,
@@ -265,8 +277,26 @@ export const Landing: React.FC = () => {
         freeSession,
         imageUrl,
         description: venueDescription || `${venueName} — a new ${venueCategory.toLowerCase()} on VibeFit.`,
+        mapQuery: googleMapsLink || undefined,
       };
-      await addVenue(newVenue as any);
+      const createdVenue = await addVenue(newVenue as any);
+
+      // Create user account for the venue AFTER creating the venue so we have the generated ID
+      const newUser = {
+        email,
+        name: venueName,
+        password,
+        hasOnboarded: true,
+        points: 0,
+        checkIns: [],
+        role: 'venue',
+        venueId: createdVenue.id,
+      };
+      await fetch('http://localhost:3001/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newUser)
+      });
 
       // Set state and navigate
       const appState = {
@@ -281,7 +311,7 @@ export const Landing: React.FC = () => {
         points: 0,
         joinedClubs: [],
         role: 'venue' as const,
-        venueId: newVenueId,
+        venueId: createdVenue.id,
       };
       localStorage.setItem('vibefit_state', JSON.stringify(appState));
       window.location.href = '/venue-dashboard';
@@ -574,6 +604,12 @@ export const Landing: React.FC = () => {
                             </div>
                           </div>
                         )}
+                      </div>
+                      {/* Google Maps Link */}
+                      <div className="flex flex-col gap-1">
+                        <label className="text-xs text-muted uppercase font-bold tracking-wider">Google Maps Link (Optional)</label>
+                        <input type="url" value={googleMapsLink} onChange={(e) => setGoogleMapsLink(e.target.value)} placeholder="e.g. https://maps.app.goo.gl/..." 
+                          style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-md)', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-main)', fontSize: '1rem', outline: 'none' }} />
                       </div>
                       {/* Category */}
                       <div className="flex flex-col gap-1">

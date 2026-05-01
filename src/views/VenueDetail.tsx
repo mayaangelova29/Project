@@ -107,7 +107,7 @@ export const VenueDetail: React.FC = () => {
         {/* Actions Row */}
         <div className="flex gap-4 mb-8">
           <a 
-            href={`https://www.google.com/maps/dir/?api=1&destination=${venue.lat},${venue.lng}`} 
+            href={venue.mapQuery || `https://www.google.com/maps/dir/?api=1&destination=${venue.lat},${venue.lng}`} 
             target="_blank" 
             rel="noreferrer"
             className="flex-1 btn btn-secondary" 
@@ -116,7 +116,7 @@ export const VenueDetail: React.FC = () => {
             <Navigation size={18} /> Get Directions
           </a>
           <a 
-            href={`https://www.google.com/maps/search/?api=1&query=${venue.lat},${venue.lng}`} 
+            href={venue.mapQuery || `https://www.google.com/maps/search/?api=1&query=${venue.lat},${venue.lng}`} 
             target="_blank" 
             rel="noreferrer"
             className="flex-1 btn btn-secondary" 
@@ -126,14 +126,14 @@ export const VenueDetail: React.FC = () => {
           </a>
         </div>
 
-        {/* Map Widget — OpenStreetMap */}
+        {/* Map Widget — Google Maps */}
         <div style={{ width: '100%', height: '300px', borderRadius: 'var(--radius-lg)', overflow: 'hidden', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.1)' }}>
           <iframe 
             width="100%" 
             height="100%" 
             frameBorder="0" 
             style={{ border: 0 }} 
-            src={`https://www.openstreetmap.org/export/embed.html?bbox=${venue.lng - 0.008}%2C${venue.lat - 0.005}%2C${venue.lng + 0.008}%2C${venue.lat + 0.005}&layer=mapnik&marker=${venue.lat}%2C${venue.lng}`}
+            src={`https://maps.google.com/maps?q=${venue.lat},${venue.lng}&z=15&output=embed`}
             allowFullScreen 
             title={`Map for ${venue.name}`}
           ></iframe>
@@ -195,7 +195,7 @@ export const VenueDetail: React.FC = () => {
             "Vibe extraction: Users frequently mention words like <strong>{venue.keywords.slice(0,2).join(' and ')}</strong> here."
           </p>
           <a 
-            href={`https://www.google.com/maps/search/?api=1&query=${venue.lat},${venue.lng}`} 
+            href={venue.mapQuery || `https://www.google.com/maps/search/?api=1&query=${venue.lat},${venue.lng}`} 
             target="_blank" 
             rel="noreferrer" 
             className="flex items-center gap-1 text-sm mt-3" 

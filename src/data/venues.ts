@@ -34,18 +34,21 @@ export async function loadVenues(): Promise<void> {
 }
 
 /** Add a new venue to the server and the runtime list. */
-export async function addVenue(venue: Venue): Promise<void> {
-  // Add to runtime immediately
-  venues.push(venue);
-
-  // Persist to JSON server
+export async function addVenue(venue: Omit<Venue, 'id'> | Venue): Promise<Venue> {
   try {
-    await fetch(`${API_URL}/venues`, {
+    const res = await fetch(`${API_URL}/venues`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(venue),
     });
+    const createdVenue = await res.json();
+    venues.push(createdVenue);
+    return createdVenue;
   } catch (err) {
     console.error('Failed to save venue to server:', err);
+    const fallbackVenue = venue as Venue;
+    if (!fallbackVenue.id) fallbackVenue.id = 'v' + Date.now();
+    venues.push(fallbackVenue);
+    return fallbackVenue;
   }
 }

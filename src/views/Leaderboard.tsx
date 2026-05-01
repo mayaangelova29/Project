@@ -22,7 +22,7 @@ export const Leaderboard: React.FC = () => {
   // Insert the current user into the global leaderboard
   const combinedLeaderboard = useMemo(() => {
     const otherUsers = dbUsers
-      .filter(u => u.email !== state.email)
+      .filter(u => u.email !== state.email && u.role === 'athlete' && (u.points || 0) > 0)
       .map(u => ({
         id: u.id,
         name: u.name,
@@ -33,16 +33,18 @@ export const Leaderboard: React.FC = () => {
     const defaultMocks = [
       { id: 'mock1', name: 'Alex K.', points: 15400, avatar: 'https://i.pravatar.cc/150?u=1' },
       { id: 'mock2', name: 'Maria S.', points: 12200, avatar: 'https://i.pravatar.cc/150?u=2' },
-      { id: 'mock3', name: 'Ivan D.', points: 9800, avatar: 'https://i.pravatar.cc/150?u=3' },
-      { id: 'mock4', name: 'Georgi T.', points: 8500, avatar: 'https://i.pravatar.cc/150?u=4' },
-      { id: 'mock5', name: 'Elena V.', points: 7100, avatar: 'https://i.pravatar.cc/150?u=5' }
+      { id: 'mock3', name: 'Ivan D.', points: 9800, avatar: 'https://i.pravatar.cc/150?u=3' }
     ];
 
-    const list = [...defaultMocks, ...otherUsers, { id: 'me', name: 'You', points: state.points, avatar: state.profilePhoto || 'https://i.pravatar.cc/150?u=me' }];
+    const list = [...defaultMocks, ...otherUsers];
+    if (state.role === 'athlete' && state.points > 0) {
+      list.push({ id: 'me', name: 'You', points: state.points, avatar: state.profilePhoto || 'https://i.pravatar.cc/150?u=me' });
+    }
     return list.sort((a, b) => b.points - a.points);
-  }, [dbUsers, state.points, state.profilePhoto, state.email]);
+  }, [dbUsers, state.points, state.profilePhoto, state.email, state.role]);
 
-  const currentUserRank = combinedLeaderboard.findIndex(u => u.id === 'me') + 1;
+  const currentUserIndex = combinedLeaderboard.findIndex(u => u.id === 'me');
+  const currentUserRank = currentUserIndex >= 0 ? currentUserIndex + 1 : null;
 
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto' }}>
@@ -64,7 +66,7 @@ export const Leaderboard: React.FC = () => {
               )}
             </div>
             <div>
-              <div className="font-bold">Your Rank: #{currentUserRank}</div>
+              <div className="font-bold">Your Rank: {currentUserRank ? `#${currentUserRank}` : 'Unranked'}</div>
               <div className="text-sm" style={{ color: 'var(--primary-color)' }}>{state.points} Pts</div>
             </div>
           </div>

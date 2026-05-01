@@ -10,7 +10,7 @@ import type { Coordinates } from '../utils/geolocation';
 
 export const Dashboard: React.FC = () => {
   const { state, setUserCoords } = useAppContext();
-  const [radius, setRadius] = useState(25);
+  const [radius, setRadius] = useState(5);
   const [locating, setLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
 
@@ -106,7 +106,7 @@ export const Dashboard: React.FC = () => {
         <input
           type="range"
           min="1"
-          max="100"
+          max="10"
           value={radius}
           onChange={(e) => setRadius(Number(e.target.value))}
           style={{
@@ -120,7 +120,7 @@ export const Dashboard: React.FC = () => {
           <span style={{ color: 'var(--text-main)', fontWeight: 600 }}>
             {rankedVenues.length} venue{rankedVenues.length !== 1 ? 's' : ''} within range
           </span>
-          <span>100 km</span>
+          <span>10 km</span>
         </div>
       </div>
 
