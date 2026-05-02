@@ -26,6 +26,7 @@ interface AppContextProps {
   state: AppState;
   loginUser: (user: Partial<AppState>) => void;
   setAuthenticated: (status: boolean, name?: string, email?: string) => void;
+  setUserName: (name: string) => void;
   setProfilePhoto: (photo: string) => void;
   setOnboarded: (status: boolean) => void;
   setUserCoords: (coords: Coordinates) => void;
@@ -82,7 +83,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
            checkIns: state.checkIns,
            joinedClubs: state.joinedClubs,
            userKeywords: state.userKeywords,
-           profilePhoto: state.profilePhoto
+           profilePhoto: state.profilePhoto,
+           name: state.userName
          })
        }).catch(console.error);
     }
@@ -117,6 +119,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const setAuthenticated = (isAuthenticated: boolean, userName?: string, email?: string) => {
     setState((s) => ({ ...s, isAuthenticated, userName: userName || s.userName, email: email || s.email }));
   };
+  const setUserName = (userName: string) => setState((s) => ({ ...s, userName }));
   const setProfilePhoto = (profilePhoto: string) => setState((s) => ({ ...s, profilePhoto }));
   const setOnboarded = (hasOnboarded: boolean) => setState((s) => ({ ...s, hasOnboarded }));
   const setUserCoords = (userCoords: Coordinates) => setState((s) => ({ ...s, userCoords }));
@@ -154,7 +157,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   return (
-    <AppContext.Provider value={{ state, loginUser, setAuthenticated, setProfilePhoto, setOnboarded, setUserCoords, setUserKeywords, addCheckIn, joinClub, leaveClub, resetState }}>
+    <AppContext.Provider value={{ state, loginUser, setAuthenticated, setUserName, setProfilePhoto, setOnboarded, setUserCoords, setUserKeywords, addCheckIn, joinClub, leaveClub, resetState }}>
       {children}
     </AppContext.Provider>
   );

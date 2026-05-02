@@ -1,11 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
-import { LogOut, User as UserIcon, Star, CheckCircle, RefreshCw, Camera } from 'lucide-react';
+import { LogOut, User as UserIcon, Star, CheckCircle, RefreshCw, Camera, Pencil, Check, X } from 'lucide-react';
 
 export const Profile: React.FC = () => {
-  const { state, setProfilePhoto, resetState } = useAppContext();
+  const { state, setProfilePhoto, setUserName, resetState } = useAppContext();
   const navigate = useNavigate();
+
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editNameValue, setEditNameValue] = useState(state.userName || '');
+
+  const handleSaveName = () => {
+    if (editNameValue.trim()) {
+      setUserName(editNameValue.trim());
+    }
+    setIsEditingName(false);
+  };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -65,7 +75,27 @@ export const Profile: React.FC = () => {
             <UserIcon size={40} color="var(--primary-color)" />
           )}
         </label>
-        <h1 className="text-2xl mb-1 mt-4">{state.userName || 'Athlete'}</h1>
+        {isEditingName ? (
+          <div className="flex items-center justify-center gap-2 mb-1 mt-4">
+            <input 
+              type="text" 
+              value={editNameValue} 
+              onChange={(e) => setEditNameValue(e.target.value)}
+              className="input text-center"
+              autoFocus
+              style={{ padding: '4px 8px', width: '200px' }}
+            />
+            <button onClick={handleSaveName} className="btn btn-secondary" style={{ padding: '6px' }}><Check size={16} color="var(--success-color)"/></button>
+            <button onClick={() => setIsEditingName(false)} className="btn btn-secondary" style={{ padding: '6px' }}><X size={16} color="#ef4444"/></button>
+          </div>
+        ) : (
+          <h1 className="text-2xl mb-1 mt-4 flex items-center justify-center gap-2">
+            {state.userName || 'Athlete'}
+            <button onClick={() => { setEditNameValue(state.userName || ''); setIsEditingName(true); }} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 0 }}>
+              <Pencil size={16} />
+            </button>
+          </h1>
+        )}
         <p className="text-muted text-sm mb-4">VibeFit Member</p>
         
         <label className="btn btn-secondary inline-flex items-center gap-2 mx-auto" style={{ cursor: 'pointer', padding: '8px 16px', fontSize: '0.85rem', width: 'fit-content' }}>

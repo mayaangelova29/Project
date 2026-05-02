@@ -52,3 +52,27 @@ export async function addVenue(venue: Omit<Venue, 'id'> | Venue): Promise<Venue>
     return fallbackVenue;
   }
 }
+
+/** Edit an existing venue on the server and update the runtime list. */
+export async function editVenue(id: string, updates: Partial<Venue>): Promise<Venue | null> {
+  try {
+    const res = await fetch(`${API_URL}/venues/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates),
+    });
+    if (!res.ok) return null;
+    const updatedVenue = await res.json();
+    
+    // Update the runtime array
+    const index = venues.findIndex(v => v.id === id);
+    if (index !== -1) {
+      venues[index] = { ...venues[index], ...updatedVenue };
+    }
+    
+    return updatedVenue;
+  } catch (err) {
+    console.error(`Failed to edit venue ${id} on server:`, err);
+    return null;
+  }
+}
