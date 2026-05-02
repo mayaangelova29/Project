@@ -178,17 +178,22 @@
       "name": "Kristiyan Stoyanov",
       "password": "90781",
       "hasOnboarded": true,
-      "points": 300,
+      "points": 600,
       "checkIns": [
         {
           "venueId": "LgSaG0N72Gs",
           "timestamp": "2026-05-01T15:14:53.498Z"
+        },
+        {
+          "venueId": "35UrxQXHuUk",
+          "timestamp": "2026-05-02T13:51:40.673Z"
         }
       ],
       "role": "athlete",
       "id": "ZfgFy2QexC0",
       "joinedClubs": [
-        "LgSaG0N72Gs"
+        "LgSaG0N72Gs",
+        "35UrxQXHuUk"
       ],
       "userKeywords": [
         "intense",
@@ -225,6 +230,76 @@
       "role": "venue",
       "venueId": "imXhvuKAp90",
       "id": "byJxrlsMKIY",
+      "joinedClubs": [],
+      "userKeywords": [],
+      "profilePhoto": null
+    },
+    {
+      "email": "pluvane.sport@gmail.com",
+      "name": "Басейн „Спортна палата“",
+      "password": "777777",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "x9-LtmFWeQw",
+      "id": "2k4XECqGUIc",
+      "joinedClubs": [],
+      "userKeywords": [],
+      "profilePhoto": null
+    },
+    {
+      "email": "yogasihiya@gmail.com",
+      "name": "Йога Студио Сихиа",
+      "password": "888888",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "FaV9rRGWgwc",
+      "id": "a5KWcVwm1O8",
+      "joinedClubs": [],
+      "userKeywords": [],
+      "profilePhoto": null
+    },
+    {
+      "email": "vitayoga@gmail.com",
+      "name": "Vita Rama Yoga studio and massages",
+      "password": "999999",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "dp_1vYA3G4A",
+      "id": "cUaRHJ-xH7I",
+      "joinedClubs": [],
+      "userKeywords": [],
+      "profilePhoto": null
+    },
+    {
+      "email": "dance.st@gmail.com",
+      "name": "Денс стейшън НДК",
+      "password": "10101010",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "XGXbtCKIcjA",
+      "id": "lytxNCIUCI4",
+      "joinedClubs": [],
+      "userKeywords": [],
+      "profilePhoto": null
+    },
+    {
+      "email": "veda.junior@gmail.com",
+      "name": "Балет Veda Junior",
+      "password": "121212",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "y7PrefLDgqg",
+      "id": "8djHCgDDJb8",
       "joinedClubs": [],
       "userKeywords": [],
       "profilePhoto": null
@@ -371,6 +446,118 @@
       "description": "Уроци и обучение по плуване\nНашите уроци по плуване са подходящи за всички възрасти и нива на умения, предоставяйки персонализирани програми за обучение, които да ви помогнат да подобрите плувните си техники и да постигнете вашите фитнес цели.\n\nСвободно плуване\nПлуването е подходящ спорт за всяка възраст. Подобрете техниката си, насладете се на спокойна тренировка или просто отпуснете ума и тялото си - нашият басейн е на разположение за вас. \n\nПрофесионални клубни тренировки\nНие предоставяме базата си за отбори и треньори от всички клубове по плуване в страната от 1968 г. до днес, включително за тренировки по артистично плуване и водна топка.",
       "mapQuery": "https://maps.app.goo.gl/fSSekQgKbziS3Re59",
       "id": "imXhvuKAp90"
+    },
+    {
+      "name": "Басейн „Спортна палата“",
+      "lat": 42.6977,
+      "lng": 23.3219,
+      "address": "София център, бул. „Васил Левски“ 75, 1000 София",
+      "keywords": [
+        "intense",
+        "strict",
+        "pro-level",
+        "beginner-friendly",
+        "community-focused",
+        "technique-focused",
+        "cardio"
+      ],
+      "rating": 5,
+      "reviewCount": 0,
+      "acceptsMultisport": false,
+      "freeSession": false,
+      "imageUrl": "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=800&q=80",
+      "description": "Комплексът разполага с 1 закрит плувен басейн (25м), фитнес зала, уроци по: аеробика, тае-бо, карате за деца, модерни танци, каланетика, пилатес.",
+      "mapQuery": "https://maps.app.goo.gl/qKEHLGaqcbcVRTkh6",
+      "id": "x9-LtmFWeQw"
+    },
+    {
+      "name": "Йога Студио Сихиа",
+      "lat": 42.6977,
+      "lng": 23.3219,
+      "address": "ж.к. Надежда 2, ул. „Митрополит Авксентий Велешки“ 49, вх.Г, 1220 София",
+      "keywords": [
+        "relaxed",
+        "community-focused",
+        "beginner-friendly",
+        "technique-focused",
+        "clean"
+      ],
+      "rating": 5,
+      "reviewCount": 0,
+      "acceptsMultisport": true,
+      "freeSession": false,
+      "imageUrl": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80",
+      "description": "Йога Сихиа – пространство за покой, осъзнатост и вътрешна сила.\n\nТук йога е не просто практика, а път към себе си. В уютна и подкрепяща среда предлагаме разнообразни стилове – от йога за всички и хатха йога, до терапевтични и въздушни практики, йога за деца и пилатес.\n\nВсеки клас е воден с внимание и грижа – за балансирано тяло, спокоен ум и вдъхновен дух. В Йога Сихиа вярваме, че промяната започва отвътре – с едно вдишване, с едно движение, с една среща със себе си.\n\nНамери своя ритъм. Намери своята Сихиа.",
+      "mapQuery": "https://maps.app.goo.gl/D5KZCNxgCgBdEF8S8",
+      "id": "FaV9rRGWgwc"
+    },
+    {
+      "name": "Vita Rama Yoga studio and massages",
+      "lat": 42.6977,
+      "lng": 23.3219,
+      "address": "София център, ул. „д-р Петър Берон“ 9, 1142 София",
+      "keywords": [
+        "relaxed",
+        "beginner-friendly",
+        "friendly",
+        "technique-focused",
+        "clean",
+        "community-focused"
+      ],
+      "rating": 5,
+      "reviewCount": 0,
+      "acceptsMultisport": false,
+      "freeSession": false,
+      "imageUrl": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80",
+      "description": "Топлото време ни подмамва да се движим повече, а защо не и да потърсим спортни занимания, които да укрепят мускулите и съзнанието ни. За тази цел здравословен център Vita Rama отвори своето йога студио в сърцето на града, в което физическите упражнения вървят ръка за ръка с грижата за духа. Йога практики за емоционален баланс, класическа йога, стречинг, мобилност или по-динамичния йогалатес - изборът от занимания е с акцент върху способностите на всяко тяло. Графикът е гъвкав и съобразен с възможностите и на най-заетите.",
+      "mapQuery": "https://maps.app.goo.gl/sXG4f1qztY9bcFJz8",
+      "id": "dp_1vYA3G4A"
+    },
+    {
+      "name": "Денс стейшън НДК",
+      "lat": 42.6977,
+      "lng": 23.3219,
+      "address": "Ндк, ул. „Професор Фритьоф Нансен“ 1325, 1463 София",
+      "keywords": [
+        "intense",
+        "community-focused",
+        "pro-level",
+        "beginner-friendly",
+        "technique-focused",
+        "cardio",
+        "strict"
+      ],
+      "rating": 5,
+      "reviewCount": 0,
+      "acceptsMultisport": false,
+      "freeSession": true,
+      "imageUrl": "https://images.unsplash.com/photo-1508807526345-15e9b5f4eaff?auto=format&fit=crop&w=800&q=80",
+      "description": "Екипът ни е от млади, талантливи и доказани професионалисти, които блестят с участията си в десетки танцови спектакли, риалити формати и фестивали. С повече от 25 висококвалифицирани танцьори и хореографи, Dance Station обхваща различни танцови стилове – от латиноамерикански и стандартни танци до класически и съвременен балет, джаз, хип-хоп, Zumba Fitness, Народни танци и много други.",
+      "mapQuery": "https://maps.app.goo.gl/9BEuWRyK8Bq6XFhE8",
+      "id": "XGXbtCKIcjA"
+    },
+    {
+      "name": "Балет Veda Junior",
+      "lat": 42.6977,
+      "lng": 23.3219,
+      "address": "София център, ул. „Граф Игнатиев“ 47Б, 1142 София",
+      "keywords": [
+        "intense",
+        "community-focused",
+        "strict",
+        "beginner-friendly",
+        "pro-level",
+        "technique-focused",
+        "cardio"
+      ],
+      "rating": 5,
+      "reviewCount": 0,
+      "acceptsMultisport": false,
+      "freeSession": false,
+      "imageUrl": "https://images.unsplash.com/photo-1508807526345-15e9b5f4eaff?auto=format&fit=crop&w=800&q=80",
+      "description": "Сценичния живот на професионалистите от Балет Веда Джуниър е доста богат и динамичен. Той включва много самостоятелни танци, собствени спектакли, както и съвместна работа с най-големите звезди в българския шоу-бизнес.Повечето от концертите с участието на балет Веда Джуниър се отразяват от най-големите медии в България – БНТ-1, БТВ, Нова TV и Планета.\n\nВ детската школа групите са разнообразни и включват деца от всички възрасти: 5-8г., 9-13г., 13-16г.', 16-20г.\n\nРепетициите на всяка група са самостоятелни и различни от останалите в интерес на крайния успех. Различават се както по своята трудност и интензитет ,така и по време и място ,съобразени с различните потребности и възможности на повечето деца.",
+      "mapQuery": "https://maps.app.goo.gl/AjPrAXg8s8gtjMYf9",
+      "id": "y7PrefLDgqg"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
