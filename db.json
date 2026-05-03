@@ -303,6 +303,35 @@
       "joinedClubs": [],
       "userKeywords": [],
       "profilePhoto": null
+    },
+    {
+      "email": "valia@gmail.com",
+      "name": "Valentina",
+      "password": "123423",
+      "hasOnboarded": true,
+      "points": 300,
+      "checkIns": [
+        {
+          "venueId": "35UrxQXHuUk",
+          "timestamp": "2026-05-03T14:35:05.810Z"
+        }
+      ],
+      "role": "athlete",
+      "id": "oSM2uWGfcVM",
+      "joinedClubs": [
+        "35UrxQXHuUk"
+      ],
+      "userKeywords": [
+        "intense",
+        "fast-paced",
+        "beginner-friendly",
+        "technique-focused",
+        "friendly",
+        "relaxed",
+        "cardio",
+        "clean"
+      ],
+      "profilePhoto": null
     }
   ],
   "venues": [
