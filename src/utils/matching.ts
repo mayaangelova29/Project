@@ -17,12 +17,15 @@ export function calculateVibeMatch(userKeywords: string[], venueKeywords: string
   if (userKeywords.length === 0) return 50; // baseline if no traits
 
   const intersection = userKeywords.filter((kw) => venueKeywords.includes(kw));
-  // Exact match ratio: how many of the user's preferred keywords are in the venue?
-  // Let's make it more forgiving. If they match 3 traits, it's 100%. 2 is 66%, etc.
-  const score = (intersection.length / Math.max(1, userKeywords.length)) * 100;
+  // Exact match ratio
+  const ratio = intersection.length / Math.max(1, userKeywords.length);
+  
+  // Square the ratio to heavily penalize missing traits. 
+  // e.g., 50% match becomes 25% score, but 100% match stays 100%.
+  const score = Math.pow(ratio, 2) * 100;
   
   // We can add a small baseline so it never says 0%
-  return Math.min(100, Math.max(10, score));
+  return Math.min(100, Math.max(10, Math.round(score)));
 }
 
 /**
@@ -51,8 +54,9 @@ export function rankVenues(
       // Distance score: 0km = 100%, maxRadius = 0%
       const distanceScore = Math.max(0, 100 - (distance / maxRadiusKm) * 100);
 
-      // Hybrid calculation: 60% vibe, 40% distance
-      const hybridScore = (0.6 * matchPercentage) + (0.4 * distanceScore);
+      // Hybrid calculation: 85% vibe, 15% distance. 
+      // Vibe must be the dominant factor so closer irrelevant venues don't outrank perfect matches further away.
+      const hybridScore = (0.85 * matchPercentage) + (0.15 * distanceScore);
 
       result.push({
         ...venue,
@@ -63,6 +67,11 @@ export function rankVenues(
     }
   }
 
-  // Sort descending by match percentage
-  return result.sort((a, b) => b.matchPercentage - a.matchPercentage);
+  // Sort descending by match percentage, then ascending by distance
+  return result.sort((a, b) => {
+    if (b.matchPercentage !== a.matchPercentage) {
+      return b.matchPercentage - a.matchPercentage;
+    }
+    return a.distance - b.distance;
+  });
 }

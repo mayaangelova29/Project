@@ -54,7 +54,12 @@ export const Dashboard: React.FC = () => {
         };
       })
       .filter(v => v.matchPercentage >= 45)
-      .sort((a, b) => a.distance - b.distance);
+      .sort((a, b) => {
+        if (b.matchPercentage !== a.matchPercentage) {
+          return b.matchPercentage - a.matchPercentage;
+        }
+        return a.distance - b.distance;
+      });
   }, [rankedVenues, state.userCoords, state.userKeywords]);
 
   if (locating) {

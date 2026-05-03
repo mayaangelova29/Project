@@ -1,72 +1,53 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCurrentLocation, geocodeAddress, NominatimResult } from '../utils/geolocation';
+import { getCurrentLocation, geocodeAddress, type NominatimResult } from '../utils/geolocation';
 import { useAppContext } from '../context/AppContext';
 import { MapPin, ArrowRight, ArrowLeft, Loader, Search, MapPinned } from 'lucide-react';
 
 const QUIZ_QUESTIONS = [
   {
-    question: "What's your preferred workout environment?",
+    question: "When selecting a training environment, what atmospheric qualities are most important to you?",
     options: [
-      { text: "Loud, high-energy, pumping music", traits: ["intense", "fast-paced"] },
-      { text: "Quiet, focused, and disciplined", traits: ["strict", "technique-focused"] },
-      { text: "Friendly, chatter, and supportive", traits: ["friendly", "community-focused"] },
-      { text: "Zen, clean, and peaceful", traits: ["relaxed", "clean"] },
+      { text: "High intensity, competitive, and grit-focused.", traits: ["intense", "sparring"] },
+      { text: "Pristine, calm, and highly organized.", traits: ["clean", "relaxed"] },
+      { text: "Dynamic, fast-paced, and highly stimulating.", traits: ["fast-paced", "cardio"] },
+      { text: "Welcoming, communal, and highly supportive.", traits: ["friendly", "community-focused", "beginner-friendly"] },
     ]
   },
   {
-    question: "How do you feel about physical contact in sports?",
+    question: "How do you prefer to interact with others during your physical conditioning?",
     options: [
-      { text: "I love it, bring on the sparring!", traits: ["sparring", "intense"] },
-      { text: "Only light contact is fine", traits: ["beginner-friendly", "technique-focused"] },
-      { text: "No contact, I prefer my own space", traits: ["cardio", "clean"] },
-      { text: "I want to move together without touching", traits: ["fast-paced", "cardio"] },
+      { text: "I prefer isolation and deep personal focus.", traits: ["strict", "pro-level"] },
+      { text: "I thrive in team environments with shared challenges.", traits: ["community-focused", "friendly"] },
+      { text: "I prefer small groups focused on technical mastery.", traits: ["technique-focused", "community-focused"] },
+      { text: "I work independently, but appreciate a respectful atmosphere.", traits: ["relaxed", "intense"] },
     ]
   },
   {
-    question: "What kind of coach motivates you best?",
+    question: "Which of the following best describes your ideal physical exertion?",
     options: [
-      { text: "A strict drill sergeant who pushes my limits", traits: ["strict", "pro-level"] },
-      { text: "A technical geek who fixes my form", traits: ["technique-focused"] },
-      { text: "An energetic cheerleader making it fun", traits: ["friendly", "fast-paced"] },
-      { text: "A chilled guide who lets me flow", traits: ["relaxed"] },
+      { text: "Combat-oriented training involving live sparring and resistance.", traits: ["sparring", "intense"] },
+      { text: "High-volume cardiovascular output with minimal rest.", traits: ["cardio", "fast-paced"] },
+      { text: "Deliberate, biomechanically precise movements.", traits: ["technique-focused", "strict", "clean"] },
+      { text: "A balanced mixture of varied exercises with an emphasis on accessibility.", traits: ["beginner-friendly", "cardio"] },
     ]
   },
   {
-    question: "What's your current experience level with fitness?",
+    question: "What qualities do you value most in an instructor or coach?",
     options: [
-      { text: "Just starting out, need guidance", traits: ["beginner-friendly", "friendly"] },
-      { text: "I work out occasionally", traits: ["relaxed", "cardio"] },
-      { text: "I'm a regular, looking for a challenge", traits: ["intense", "community-focused"] },
-      { text: "I'm a pro/competitor", traits: ["pro-level", "sparring"] },
+      { text: "Competitive experience and combat-proven methodologies.", traits: ["pro-level", "sparring", "strict"] },
+      { text: "An analytical approach to physiological form and technique.", traits: ["technique-focused", "strict"] },
+      { text: "High energy, consistent motivation, and pacing.", traits: ["fast-paced", "intense"] },
+      { text: "A calm demeanor focused on mental centering and restoration.", traits: ["relaxed", "clean"] },
     ]
   },
   {
-    question: "When things get tough in a workout, you...",
+    question: "What is your primary desired psychological or physical outcome post-training?",
     options: [
-      { text: "Bite down on my mouthpiece and go harder", traits: ["intense", "sparring"] },
-      { text: "Rely on the team to pull me through", traits: ["community-focused", "friendly"] },
-      { text: "Focus entirely on my breathing to calm down", traits: ["relaxed", "technique-focused"] },
-      { text: "Scale back so I can finish safely", traits: ["beginner-friendly", "clean"] },
-    ]
-  },
-  {
-    question: "What role does music play for you?",
-    options: [
-      { text: "Essential. It dictates the rhythm", traits: ["fast-paced", "cardio"] },
-      { text: "Good background noise", traits: ["community-focused"] },
-      { text: "I prefer silence or natural sounds", traits: ["relaxed", "strict"] },
-      { text: "I don't even hear it when I'm in the zone", traits: ["pro-level", "intense"] },
-    ]
-  },
-  {
-    question: "Final question: What's your primary goal?",
-    options: [
-      { text: "Learn self-defense and fight skills", traits: ["sparring", "strict"] },
-      { text: "Burn maximum calories and sweat", traits: ["cardio", "fast-paced"] },
-      { text: "Find a tribe and make friends", traits: ["community-focused", "friendly"] },
-      { text: "Master a complex physical skill", traits: ["technique-focused", "pro-level"] },
-      { text: "Just feel better physically and mentally", traits: ["relaxed", "clean", "beginner-friendly"] },
+      { text: "A sense of martial readiness and physical dominance.", traits: ["intense", "sparring", "pro-level"] },
+      { text: "Maximum caloric expenditure and cardiovascular exhaustion.", traits: ["cardio", "fast-paced"] },
+      { text: "The acquisition and refinement of a complex physical skill.", traits: ["technique-focused", "strict"] },
+      { text: "Complete mental decompression and physical restoration.", traits: ["relaxed", "clean"] },
     ]
   }
 ];
