@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCurrentLocation } from '../utils/geolocation';
+import { getCurrentLocation, geocodeAddress, NominatimResult } from '../utils/geolocation';
 import { useAppContext } from '../context/AppContext';
-import { MapPin, ArrowRight, ArrowLeft, Loader } from 'lucide-react';
+import { MapPin, ArrowRight, ArrowLeft, Loader, Search, MapPinned } from 'lucide-react';
 
 const QUIZ_QUESTIONS = [
   {
@@ -76,6 +76,13 @@ export const Quiz: React.FC = () => {
   const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [gpsError, setGpsError] = useState<string | null>(null);
+
+  // Manual location state
+  const [manualAddress, setManualAddress] = useState('');
+  const [geocodeResults, setGeocodeResults] = useState<NominatimResult[]>([]);
+  const [isGeocoding, setIsGeocoding] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const geocodeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const { setUserKeywords, setUserCoords, setOnboarded, state } = useAppContext();
   const navigate = useNavigate();
@@ -93,26 +100,27 @@ export const Quiz: React.FC = () => {
     }
   };
 
+  const markOnboardedInDb = async () => {
+    if (state.email) {
+      try {
+        const cleanEmail = state.email.trim().toLowerCase();
+        const res = await fetch(`http://localhost:3001/users?email=${encodeURIComponent(cleanEmail)}`);
+        const users = await res.json();
+        if (users.length > 0) {
+          await fetch(`http://localhost:3001/users/${users[0].id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ hasOnboarded: true })
+          });
+        }
+      } catch (error) {
+        console.error("Failed to update onboarding status", error);
+      }
+    }
+  };
+
   const finalizeOnboarding = async (traits: string[]) => {
     setLoading(true);
-
-    const markOnboardedInDb = async () => {
-      if (state.email) {
-        try {
-          const res = await fetch(`http://localhost:3001/users?email=${state.email}`);
-          const users = await res.json();
-          if (users.length > 0) {
-            await fetch(`http://localhost:3001/users/${users[0].id}`, {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ hasOnboarded: true })
-            });
-          }
-        } catch (error) {
-          console.error("Failed to update onboarding status", error);
-        }
-      }
-    };
 
     try {
       // We deduplicate traits
@@ -127,27 +135,118 @@ export const Quiz: React.FC = () => {
       navigate('/app');
     } catch (e) {
       console.error(e);
-      setGpsError("We need your location to find nearby venues.");
-      // Fallback to absolute center of Sofia for demonstration if declined
-      const fallBackCoords = { lat: 42.6977, lng: 23.3219 }; 
-      setUserCoords(fallBackCoords);
-      await markOnboardedInDb();
-      setOnboarded(true);
-      setTimeout(() => navigate('/app'), 2000);
-    } finally {
       setLoading(false);
+      setGpsError("We couldn't automatically detect your location. Please enter your address manually.");
     }
   };
 
-  if (loading) {
+  const handleAddressChange = useCallback((value: string) => {
+    setManualAddress(value);
+    if (geocodeTimerRef.current) clearTimeout(geocodeTimerRef.current);
+    if (value.length < 3) {
+      setGeocodeResults([]);
+      setShowSuggestions(false);
+      return;
+    }
+    setIsGeocoding(true);
+    geocodeTimerRef.current = setTimeout(async () => {
+      const results = await geocodeAddress(value);
+      setGeocodeResults(results);
+      setShowSuggestions(results.length > 0);
+      setIsGeocoding(false);
+    }, 600);
+  }, []);
+
+  const selectGeocodeSuggestion = async (result: NominatimResult) => {
+    setManualAddress(result.display_name);
+    setShowSuggestions(false);
+    setGeocodeResults([]);
+    
+    setLoading(true);
+    setGpsError(null);
+    
+    const coords = { lat: parseFloat(result.lat), lng: parseFloat(result.lon) };
+    setUserCoords(coords);
+    await markOnboardedInDb();
+    setOnboarded(true);
+    navigate('/app');
+  };
+
+  if (loading || gpsError) {
     return (
-      <div className="app-container justify-center items-center">
-        <Loader className="animate-spin mb-4" size={48} color="var(--primary-color)" />
-        <h2 className="text-center">Analyzing Your Vibe...</h2>
-        <p className="text-muted mt-2 text-center">Finding your perfect match</p>
-        {gpsError && (
-          <div className="badge mt-4" style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)', color: '#ef4444' }}>
-            {gpsError} (Using default city center)
+      <div className="app-container justify-center items-center" style={{ padding: '24px' }}>
+        {loading ? (
+          <>
+            <Loader className="animate-spin mb-4" size={48} color="var(--primary-color)" />
+            <h2 className="text-center">Analyzing Your Vibe...</h2>
+            <p className="text-muted mt-2 text-center">Finding your perfect match</p>
+          </>
+        ) : (
+          <div className="card" style={{ width: '100%', maxWidth: '400px', padding: '32px 24px', textAlign: 'center' }}>
+            <MapPin size={48} color="var(--accent-color)" className="mx-auto mb-4" />
+            <h2 className="text-xl mb-2">Location Required</h2>
+            <p className="text-muted text-sm mb-6">{gpsError}</p>
+            
+            <div style={{ position: 'relative', textAlign: 'left' }}>
+              <label className="text-xs text-muted uppercase font-bold tracking-wider mb-1 block">Your Address</label>
+              <div className="flex items-center gap-2" style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-md)', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                {isGeocoding ? <Loader size={18} className="text-muted" style={{ animation: 'spin 1s linear infinite' }} /> : <Search size={18} className="text-muted" />}
+                <input 
+                  type="text" 
+                  value={manualAddress} 
+                  onChange={(e) => handleAddressChange(e.target.value)} 
+                  onFocus={() => { if (geocodeResults.length > 0) setShowSuggestions(true); }}
+                  placeholder="e.g. Sofia, Bulgaria"
+                  style={{ background: 'transparent', border: 'none', outline: 'none', color: 'var(--text-main)', width: '100%', fontSize: '1rem' }} 
+                />
+              </div>
+
+              {showSuggestions && geocodeResults.length > 0 && (
+                <div style={{
+                  position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50, marginTop: '4px',
+                  background: 'rgba(30, 41, 59, 0.98)', backdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(99, 102, 241, 0.3)', borderRadius: 'var(--radius-md)',
+                  boxShadow: '0 12px 40px rgba(0,0,0,0.5)', overflow: 'hidden',
+                  maxHeight: '240px', overflowY: 'auto',
+                }}>
+                  {geocodeResults.map((r) => (
+                    <button key={r.place_id} type="button"
+                      onClick={() => selectGeocodeSuggestion(r)}
+                      style={{
+                        display: 'flex', alignItems: 'flex-start', gap: '10px', width: '100%',
+                        padding: '12px 16px', background: 'transparent', border: 'none',
+                        color: 'var(--text-main)', cursor: 'pointer', textAlign: 'left',
+                        fontSize: '0.85rem', lineHeight: '1.4', transition: 'background 0.15s',
+                        borderBottom: '1px solid rgba(255,255,255,0.05)',
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(99,102,241,0.15)'}
+                      onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                    >
+                      <MapPinned size={16} style={{ color: 'var(--accent-color)', flexShrink: 0, marginTop: '2px' }} />
+                      <span>{r.display_name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <button 
+              onClick={() => {
+                // Allow them to skip manually if they really want, using a fallback
+                setLoading(true);
+                setGpsError(null);
+                const fallBackCoords = { lat: 42.6977, lng: 23.3219 }; 
+                setUserCoords(fallBackCoords);
+                markOnboardedInDb().then(() => {
+                  setOnboarded(true);
+                  navigate('/app');
+                });
+              }}
+              className="mt-6 text-sm"
+              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', textDecoration: 'underline', cursor: 'pointer' }}
+            >
+              Skip & use default city center
+            </button>
           </div>
         )}
       </div>

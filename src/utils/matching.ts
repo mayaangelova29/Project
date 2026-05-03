@@ -43,6 +43,11 @@ export function rankVenues(
     if (distance <= maxRadiusKm) {
       const matchPercentage = calculateVibeMatch(userKeywords, venue.keywords);
       
+      // Filter out venues that don't meet the minimum 45% match threshold
+      if (matchPercentage < 45) {
+        continue;
+      }
+      
       // Distance score: 0km = 100%, maxRadius = 0%
       const distanceScore = Math.max(0, 100 - (distance / maxRadiusKm) * 100);
 

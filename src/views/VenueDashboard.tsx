@@ -1,10 +1,11 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { venues, editVenue } from '../data/venues';
-import { MapPin, Users, CheckCircle, TrendingUp, Pencil, Check, X, Camera } from 'lucide-react';
+import { MapPin, Users, CheckCircle, TrendingUp, Pencil, Check, X, Camera, Trash2 } from 'lucide-react';
+import { compressImage } from '../utils/image';
 
 export const VenueDashboard: React.FC = () => {
-  const { state, setUserName } = useAppContext();
+  const { state, setUserName, resetState } = useAppContext();
   const [dbUsers, setDbUsers] = useState<any[]>([]);
 
   const myVenue = useMemo(() => {
@@ -32,14 +33,15 @@ export const VenueDashboard: React.FC = () => {
     setEditingField(field);
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setEditImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      try {
+        const compressedBase64 = await compressImage(file);
+        setEditImage(compressedBase64);
+      } catch (err) {
+        console.error("Failed to process image:", err);
+      }
     }
   };
 
@@ -100,11 +102,29 @@ export const VenueDashboard: React.FC = () => {
     }, 0);
   }, [dbUsers, myVenue]);
 
+  const handleDeleteAccount = async () => {
+    if (window.confirm("Are you sure you want to permanently delete your venue account? This action cannot be undone and your venue will be removed from VibeFit.")) {
+      try {
+        if (state.id) {
+          await fetch(`http://localhost:3001/users/${state.id}`, { method: 'DELETE' });
+        }
+        if (state.venueId) {
+          await fetch(`http://localhost:3001/venues/${state.venueId}`, { method: 'DELETE' });
+        }
+        resetState();
+        window.location.href = '/';
+      } catch (error) {
+        console.error("Failed to delete venue account", error);
+        alert("Failed to delete account. Please try again.");
+      }
+    }
+  };
+
   if (!myVenue) {
     return (
-      <div className="text-center p-8">
-        <h2 className="text-xl mb-2">Venue not found</h2>
-        <p className="text-muted">Your venue listing could not be loaded.</p>
+      <div className="flex flex-col items-center justify-center p-8 text-center" style={{ minHeight: '60vh' }}>
+        <h2 className="text-xl mb-2 text-gradient">Venue Not Found</h2>
+        <p className="text-muted">We couldn't find your venue data. Please contact support.</p>
       </div>
     );
   }
@@ -293,6 +313,21 @@ export const VenueDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <button 
+        onClick={handleDeleteAccount}
+        className="w-full card mt-6"
+        style={{ 
+          background: 'rgba(239, 68, 68, 0.05)', 
+          border: '1px solid rgba(239, 68, 68, 0.3)', 
+          color: '#ef4444',
+          display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px',
+          fontWeight: 'bold', cursor: 'pointer',
+          padding: '16px'
+        }}
+      >
+        <Trash2 size={20} /> Delete Venue Account
+      </button>
     </div>
   );
 };

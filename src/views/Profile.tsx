@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
-import { LogOut, User as UserIcon, Star, CheckCircle, RefreshCw, Camera, Pencil, Check, X } from 'lucide-react';
+import { LogOut, User as UserIcon, Star, CheckCircle, RefreshCw, Camera, Pencil, Check, X, Trash2 } from 'lucide-react';
+import { compressImage } from '../utils/image';
 
 export const Profile: React.FC = () => {
   const { state, setProfilePhoto, setUserName, resetState } = useAppContext();
@@ -17,37 +18,48 @@ export const Profile: React.FC = () => {
     setIsEditingName(false);
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const photoData = reader.result as string;
+      try {
+        const photoData = await compressImage(file);
         setProfilePhoto(photoData);
 
         if (state.email) {
-          try {
-            const res = await fetch(`http://localhost:3001/users?email=${state.email}`);
-            const users = await res.json();
-            if (users.length > 0) {
-              await fetch(`http://localhost:3001/users/${users[0].id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ profilePhoto: photoData })
-              });
-            }
-          } catch (error) {
-            console.error("Failed to save photo to DB", error);
+          const res = await fetch(`http://localhost:3001/users?email=${state.email}`);
+          const users = await res.json();
+          if (users.length > 0) {
+            await fetch(`http://localhost:3001/users/${users[0].id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ profilePhoto: photoData })
+            });
           }
         }
-      };
-      reader.readAsDataURL(file);
+      } catch (error) {
+        console.error("Failed to process or save photo", error);
+      }
     }
   };
 
   const handleLogout = () => {
     resetState();
     navigate('/');
+  };
+
+  const handleDeleteAccount = async () => {
+    if (window.confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) {
+      try {
+        if (state.id) {
+          await fetch(`http://localhost:3001/users/${state.id}`, { method: 'DELETE' });
+        }
+        resetState();
+        navigate('/');
+      } catch (error) {
+        console.error("Failed to delete account", error);
+        alert("Failed to delete account. Please try again.");
+      }
+    }
   };
 
   const handleRetakeQuiz = () => {
@@ -160,6 +172,21 @@ export const Profile: React.FC = () => {
         }}
       >
         <LogOut size={20} /> Log Out Account
+      </button>
+
+      <button 
+        onClick={handleDeleteAccount}
+        className="w-full card mt-4"
+        style={{ 
+          background: 'transparent', 
+          border: '1px solid rgba(239, 68, 68, 0.3)', 
+          color: '#ef4444',
+          display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px',
+          fontWeight: 'bold', cursor: 'pointer',
+          padding: '12px'
+        }}
+      >
+        <Trash2 size={20} /> Delete Account
       </button>
 
     </div>

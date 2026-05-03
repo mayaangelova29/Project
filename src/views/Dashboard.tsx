@@ -53,6 +53,7 @@ export const Dashboard: React.FC = () => {
           hybridScore: 0,
         };
       })
+      .filter(v => v.matchPercentage >= 45)
       .sort((a, b) => a.distance - b.distance);
   }, [rankedVenues, state.userCoords, state.userKeywords]);
 

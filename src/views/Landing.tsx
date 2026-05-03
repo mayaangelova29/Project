@@ -161,17 +161,18 @@ export const Landing: React.FC = () => {
   // Athlete login/signup
   const handleAthleteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const cleanEmail = email.trim().toLowerCase();
 
     if (isLogin) {
-      if (email && password) {
+      if (cleanEmail && password) {
         try {
-          const response = await fetch(`http://localhost:3001/users?email=${email}`);
+          const response = await fetch(`http://localhost:3001/users?email=${encodeURIComponent(cleanEmail)}`);
           const users = await response.json();
           const user = users[0];
 
           if (user) {
             if (user.password === password) {
-              loginUser({
+              const loginState = {
                 id: user.id,
                 role: user.role || 'athlete',
                 venueId: user.venueId || null,
@@ -183,10 +184,13 @@ export const Landing: React.FC = () => {
                 joinedClubs: user.joinedClubs || [],
                 userKeywords: user.userKeywords || [],
                 profilePhoto: user.profilePhoto || null,
-              });
+              };
+              loginUser(loginState);
 
               if (user.role === 'venue') {
-                // Venue login — reload to pick up state
+                // Venue login — manually persist state before hard reload
+                const currentState = JSON.parse(localStorage.getItem('vibefit_state') || '{}');
+                localStorage.setItem('vibefit_state', JSON.stringify({ ...currentState, isAuthenticated: true, ...loginState }));
                 window.location.href = '/venue-dashboard';
               } else if (user.hasOnboarded) {
                 setOnboarded(true);
@@ -206,16 +210,16 @@ export const Landing: React.FC = () => {
         }
       }
     } else {
-      if (name && email && password) {
+      if (name && cleanEmail && password) {
         try {
-          const checkRes = await fetch(`http://localhost:3001/users?email=${email}`);
+          const checkRes = await fetch(`http://localhost:3001/users?email=${encodeURIComponent(cleanEmail)}`);
           const existingUsers = await checkRes.json();
           if (existingUsers.length > 0) {
             alert('User already exists with this email.');
             return;
           }
 
-          const newUser = { email, name, password, hasOnboarded: false, points: 0, checkIns: [], role: 'athlete' };
+          const newUser = { email: cleanEmail, name, password, hasOnboarded: false, points: 0, checkIns: [], role: 'athlete' };
           const signupRes = await fetch('http://localhost:3001/users', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -227,7 +231,7 @@ export const Landing: React.FC = () => {
             id: createdUser.id,
             role: 'athlete',
             userName: name,
-            email,
+            email: cleanEmail,
             hasOnboarded: false,
             points: 0,
             checkIns: [],
@@ -245,14 +249,15 @@ export const Landing: React.FC = () => {
   // Venue registration
   const handleVenueSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const cleanEmail = email.trim().toLowerCase();
 
-    if (!venueName || !email || !password || !venueAddress) {
+    if (!venueName || !cleanEmail || !password || !venueAddress) {
       alert('Please fill in all required fields.');
       return;
     }
 
     try {
-      const checkRes = await fetch(`http://localhost:3001/users?email=${email}`);
+      const checkRes = await fetch(`http://localhost:3001/users?email=${encodeURIComponent(cleanEmail)}`);
       const existingUsers = await checkRes.json();
       if (existingUsers.length > 0) {
         alert('An account already exists with this email.');
@@ -283,7 +288,7 @@ export const Landing: React.FC = () => {
 
       // Create user account for the venue AFTER creating the venue so we have the generated ID
       const newUser = {
-        email,
+        email: cleanEmail,
         name: venueName,
         password,
         hasOnboarded: true,
@@ -302,7 +307,7 @@ export const Landing: React.FC = () => {
       const appState = {
         isAuthenticated: true,
         userName: venueName,
-        email,
+        email: cleanEmail,
         profilePhoto: null,
         hasOnboarded: true,
         userCoords: null,
