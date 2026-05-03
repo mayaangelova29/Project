@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { venues, editVenue } from '../data/venues';
-import { MapPin, Star, Users, CheckCircle, TrendingUp, Eye, Pencil, Check, X, Camera } from 'lucide-react';
+import { MapPin, Users, CheckCircle, TrendingUp, Pencil, Check, X, Camera } from 'lucide-react';
 
 export const VenueDashboard: React.FC = () => {
   const { state, setUserName } = useAppContext();
@@ -45,7 +45,7 @@ export const VenueDashboard: React.FC = () => {
 
   const handleSaveField = async (field: 'photo' | 'name' | 'address' | 'description' | 'keywords') => {
     if (!localVenue) return;
-    
+
     let updates: any = {};
     if (field === 'name') updates.name = editName;
     if (field === 'description') updates.description = editDesc;
@@ -58,7 +58,7 @@ export const VenueDashboard: React.FC = () => {
     const updated = await editVenue(localVenue.id, updates);
     if (updated) {
       setLocalVenue(updated);
-      
+
       // Update AppContext if needed
       if (field === 'name' && state.role === 'venue' && state.venueId === localVenue.id) {
         setUserName(editName);

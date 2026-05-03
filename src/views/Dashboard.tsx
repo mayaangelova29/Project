@@ -6,7 +6,6 @@ import { getCurrentLocation, calculateDistance } from '../utils/geolocation';
 import { VenueCard } from '../components/VenueCard';
 import { MapPin, SlidersHorizontal, Building2, Loader } from 'lucide-react';
 import type { MatchedVenue } from '../utils/matching';
-import type { Coordinates } from '../utils/geolocation';
 
 export const Dashboard: React.FC = () => {
   const { state, setUserCoords } = useAppContext();

@@ -30,14 +30,14 @@ const geocodeAddress = async (query: string): Promise<NominatimResult[]> => {
     const res = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encoded}&key=${apiKey}`);
     if (!res.ok) return [];
     const data = await res.json();
-    
+
     if (data.status === 'OK') {
-       return data.results.map((r: any) => ({
-           place_id: r.place_id || Math.random(),
-           display_name: r.formatted_address,
-           lat: r.geometry.location.lat.toString(),
-           lon: r.geometry.location.lng.toString()
-       }));
+      return data.results.map((r: any) => ({
+        place_id: r.place_id || Math.random(),
+        display_name: r.formatted_address,
+        lat: r.geometry.location.lat.toString(),
+        lon: r.geometry.location.lng.toString()
+      }));
     }
     return [];
   } catch {
@@ -67,7 +67,7 @@ export const Landing: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [selectedRole, setSelectedRole] = useState<'athlete' | 'venue' | null>(null);
-  const { state, loginUser, setAuthenticated, setOnboarded, resetState } = useAppContext();
+  const { state, loginUser, setOnboarded, resetState } = useAppContext();
   const navigate = useNavigate();
 
   // Venue registration fields
@@ -608,7 +608,7 @@ export const Landing: React.FC = () => {
                       {/* Google Maps Link */}
                       <div className="flex flex-col gap-1">
                         <label className="text-xs text-muted uppercase font-bold tracking-wider">Google Maps Link (Optional)</label>
-                        <input type="url" value={googleMapsLink} onChange={(e) => setGoogleMapsLink(e.target.value)} placeholder="e.g. https://maps.app.goo.gl/..." 
+                        <input type="url" value={googleMapsLink} onChange={(e) => setGoogleMapsLink(e.target.value)} placeholder="e.g. https://maps.app.goo.gl/..."
                           style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 'var(--radius-md)', padding: '12px 16px', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-main)', fontSize: '1rem', outline: 'none' }} />
                       </div>
                       {/* Category */}
