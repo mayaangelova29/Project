@@ -23,7 +23,7 @@ export const VenueDashboard: React.FC = () => {
   const [editKeywords, setEditKeywords] = useState('');
 
   const startEditing = (field: 'photo' | 'name' | 'address' | 'description' | 'keywords') => {
-    if (!localVenue) return <div>Loading...</div>;
+    if (!localVenue) return;
     if (field === 'name') setEditName(localVenue.name);
     if (field === 'description') setEditDesc(localVenue.description);
     if (field === 'photo') setEditImage(localVenue.imageUrl);
@@ -108,7 +108,7 @@ export const VenueDashboard: React.FC = () => {
       </div>
     );
   }
-
+  const venue = localVenue!;
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto' }}>
       <div className="mb-8">
@@ -146,7 +146,7 @@ export const VenueDashboard: React.FC = () => {
           </div>
         ) : (
           <div style={{ height: '150px', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
-            <img src={localVenue.imageUrl} alt="Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img src={venue.imageUrl} alt="Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
         )}
       </div>
@@ -170,7 +170,7 @@ export const VenueDashboard: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="text-xl font-bold">{localVenue.name}</div>
+          <div className="text-xl font-bold">{venue.name}</div>
         )}
       </div>
 
@@ -193,7 +193,7 @@ export const VenueDashboard: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-muted"><MapPin size={16} /> {localVenue.address}</div>
+          <div className="flex items-center gap-2 text-muted"><MapPin size={16} /> {venue.address}</div>
         )}
       </div>
 
@@ -216,7 +216,7 @@ export const VenueDashboard: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="text-sm text-muted" style={{ whiteSpace: 'pre-wrap' }}>{localVenue.description}</div>
+          <div className="text-sm text-muted" style={{ whiteSpace: 'pre-wrap' }}>{venue.description}</div>
         )}
       </div>
 
@@ -241,7 +241,7 @@ export const VenueDashboard: React.FC = () => {
           </div>
         ) : (
           <div className="flex gap-2 flex-wrap">
-            {localVenue.keywords.map((kw) => (
+            {venue.keywords.map((kw) => (
               <span key={kw} className="badge" style={{ padding: '4px 10px' }}>{kw}</span>
             ))}
           </div>
