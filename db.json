@@ -332,6 +332,48 @@
         "clean"
       ],
       "profilePhoto": null
+    },
+    {
+      "email": "indoor_climb@gmail.com",
+      "name": "Momentum indoor climbing",
+      "password": "23123",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "_5yErT1mSi0",
+      "id": "oqHA7zgWBNs",
+      "joinedClubs": [],
+      "userKeywords": [],
+      "profilePhoto": null
+    },
+    {
+      "email": "balkan_climb@gmail.com",
+      "name": "Balkan Climbing",
+      "password": "345656",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "lNkh9gA4oKY",
+      "id": "EAiSuFWhvgc",
+      "joinedClubs": [],
+      "userKeywords": [],
+      "profilePhoto": null
+    },
+    {
+      "email": "reformer.pilates@gmail.com",
+      "name": "Pilates Reformer Studio RM",
+      "password": "102938",
+      "hasOnboarded": true,
+      "points": 0,
+      "checkIns": [],
+      "role": "venue",
+      "venueId": "1LPRbDCw46c",
+      "id": "DgLbTvnM2hc",
+      "joinedClubs": [],
+      "userKeywords": [],
+      "profilePhoto": null
     }
   ],
   "venues": [
@@ -587,6 +629,72 @@
       "description": "Сценичния живот на професионалистите от Балет Веда Джуниър е доста богат и динамичен. Той включва много самостоятелни танци, собствени спектакли, както и съвместна работа с най-големите звезди в българския шоу-бизнес.Повечето от концертите с участието на балет Веда Джуниър се отразяват от най-големите медии в България – БНТ-1, БТВ, Нова TV и Планета.\n\nВ детската школа групите са разнообразни и включват деца от всички възрасти: 5-8г., 9-13г., 13-16г.', 16-20г.\n\nРепетициите на всяка група са самостоятелни и различни от останалите в интерес на крайния успех. Различават се както по своята трудност и интензитет ,така и по време и място ,съобразени с различните потребности и възможности на повечето деца.",
       "mapQuery": "https://maps.app.goo.gl/AjPrAXg8s8gtjMYf9",
       "id": "y7PrefLDgqg"
+    },
+    {
+      "name": "Momentum indoor climbing",
+      "lat": 42.6977,
+      "lng": 23.3219,
+      "address": "м. Къро, бул. „Цариградско шосе“ 111V, 1784 София",
+      "keywords": [
+        "intense",
+        "pro-level",
+        "beginner-friendly",
+        "technique-focused",
+        "community-focused",
+        "friendly"
+      ],
+      "rating": 5,
+      "reviewCount": 0,
+      "acceptsMultisport": false,
+      "freeSession": false,
+      "imageUrl": "https://cdn.walltopia.com/wp-content/uploads/20231030104515/Image-2-8.jpg",
+      "description": "Независимо дали сте начинаещ или опитен катерач, в нашата зала ще намерите перфектната среда да подобрите уменията си. За нас е важно всеки човек в залата да се чувства комфортно, да е спокоен да задава въпроси и да иска помощ.\n\nВ 1955 кв.м катерачна площ, с която разполагаме, сме се постарали да подредим маршрутите, уредите и пространството тaка, че всеки да може да намери това, което е подходящо за него.\n\nЧесто в залата организираме катерачни събития и състезания с цел да обединим катерачната общност в София и да се съберем с приятели в свободното ни време. Заповядайте да катерим заедно!\n\nАбонаменти с неограничен достъп\nНай-добрият начин да се възползвате от всичко, което предлагаме, е да се присъедините към Momentum Climbing. Можете да изберете от 3 вида абонаменти: предплатен месечен, предплатен годишен и ежемесечен абонамент с автоматично плащане. ",
+      "mapQuery": "https://maps.app.goo.gl/yn4YHPkvgcAdKRgX8",
+      "id": "_5yErT1mSi0"
+    },
+    {
+      "name": "Balkan Climbing",
+      "lat": 42.6977,
+      "lng": 23.3219,
+      "address": "в.з. Американски колеж, ул. „187-ма“ 9, 1756 София",
+      "keywords": [
+        "intense",
+        "pro-level",
+        "beginner-friendly",
+        "community-focused",
+        "technique-focused",
+        "friendly"
+      ],
+      "rating": 5,
+      "reviewCount": 0,
+      "acceptsMultisport": false,
+      "freeSession": false,
+      "imageUrl": "https://cdn.walltopia.com/wp-content/uploads/20231030104515/Image-2-8.jpg",
+      "description": "Със своите зашеметяващи над 3000 кв. м. катерачна площ, Balkan Climbing е най-голямата зала за катерене на Балканите и разтупква сърцето на всеки катерач! Това не е просто зала за катерене, а цяла катерачна вселена! Залата разполага с:\n\nВътрешна и външна стена за катерене на въже с обща площ от 2000 кв.м. , височина между 8 и 17м и възможност за над 300 маршрута\nДетска зона с 250 кв. м. площ и 2 пързалки\n\nСтена за скорост, покриваща стандартите на IFSC\n\nОбособена фитнес зона със съвременни уреди\n\nБар и ресторант, където да се подкрепите с кафе и нещо сладко преди катерене, или пък да се наградите с бира и вечеря след добра сесия\n\nСобствен паркинг със свободен достъп и 100 паркоместа",
+      "mapQuery": "https://maps.app.goo.gl/mSxK5o3sU7q7jVi47",
+      "id": "lNkh9gA4oKY"
+    },
+    {
+      "name": "Pilates Reformer Studio RM",
+      "lat": 42.6977,
+      "lng": 23.3219,
+      "address": "ж.к. Света Троица, ул. „Пловдив“ 347А, 1309 София",
+      "keywords": [
+        "pro-level",
+        "beginner-friendly",
+        "technique-focused",
+        "clean",
+        "strict",
+        "intense"
+      ],
+      "rating": 5,
+      "reviewCount": 0,
+      "acceptsMultisport": false,
+      "freeSession": false,
+      "imageUrl": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80",
+      "description": "Добре дошли в Pilates Reformer Room – бутиково студио, посветено на групови тренировки с Пилатес Реформър. Нашата цел е да създадем среда, в която всеки участник да се движи осъзнато, да подобрява физическата си форма и да възстановява баланса между тяло и ум.\n\nВодим малки групови тренировки за начинаещи и напреднали, с фокус върху:\n    •    контрол на движението\n    •    изграждане на сила и стабилност\n    •    подобряване на баланса и стойката\n\nЗа инструктора\n\nТренировките се водят от сертифициран инструктор по Пилатес Реформър, с професионален подход и внимание към всеки детайл. Методиката следва класическите принципи на Пилатес, като се адаптира към нуждите и възможностите на групата, без компромис с техниката и безопасността.",
+      "mapQuery": "https://maps.app.goo.gl/gGzA7HiuD6AcqZeY7",
+      "id": "1LPRbDCw46c"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
