@@ -23,7 +23,7 @@ export const VenueDashboard: React.FC = () => {
   const [editKeywords, setEditKeywords] = useState('');
 
   const startEditing = (field: 'photo' | 'name' | 'address' | 'description' | 'keywords') => {
-    if (!localVenue) return;
+    if (!localVenue) return <div>Loading...</div>;
     if (field === 'name') setEditName(localVenue.name);
     if (field === 'description') setEditDesc(localVenue.description);
     if (field === 'photo') setEditImage(localVenue.imageUrl);
