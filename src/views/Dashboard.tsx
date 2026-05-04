@@ -35,7 +35,7 @@ export const Dashboard: React.FC = () => {
   const rankedVenues = useMemo(() => {
     if (!state.userCoords) return [];
     return rankVenues(venues, state.userCoords, state.userKeywords, radius);
-  }, [state.userCoords, state.userKeywords, radius]);
+  }, [state.userCoords, state.userKeywords, radius, venues.length]);
 
   // Venues outside the radius (still show them, just separately)
   const otherVenues: MatchedVenue[] = useMemo(() => {
